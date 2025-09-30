@@ -1,16 +1,15 @@
 # imooc-image-sass
-[慕课网 | 前端全栈进阶 Nextjs打造跨框架SaaS应用](https://coding.imooc.com/class/835.html)
 
+[慕课网 | 前端全栈进阶 Nextjs 打造跨框架 SaaS 应用](https://coding.imooc.com/class/835.html)
 
 ## 参考资源
 
-> [Next.js](https://nextjs.org/docs)
-> [Tailwind CSS](https://tailwindcss.com/docs)
-> [shadcn/ui](https://ui.shadcn.com/docs)
-> [Drizzle ORM](https://orm.drizzle.team/)
-
+> [Next.js](https://nextjs.org/docs) > [Tailwind CSS](https://tailwindcss.com/docs) > [shadcn/ui](https://ui.shadcn.com/docs) > [Drizzle ORM](https://orm.drizzle.team/)
+>
+> [clerk](https://clerk.com/docs) > [next-auth](https://next-auth.js.org/getting-started/example)
 
 ## drizzle orm 操作
+
 ```shell
 
 # 操作指南
@@ -24,4 +23,11 @@ npx drizzle-kit push
 npx drizzle-kit studio
 
 # 打开访问数据库 https://local.drizzle.studio/
+```
+
+## Auth
+
+```shell
+# 访问校验登录
+# http://localhost:3000/api/auth/signin
 ```
