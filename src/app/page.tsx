@@ -1,8 +1,16 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import db from '@/server/index'
+import { Users } from '@/server/db/schema'
 
-export default function Home() {
+export default async function Home() {
+  const users = await db.query.Users.findMany()
+
+  // const users = await db.select().from(Users)
+
+  console.log('🚀 ~ 服务端输出 ~ users:', users)
+
   return (
     <div className="h-screen flex justify-center items-center ">
       <form action="" className="w-full max-w-md flex flex-col gap-4">
@@ -11,6 +19,11 @@ export default function Home() {
         <Textarea name="description" placeholder="Description" />
         <Button>Submit</Button>
       </form>
+      <div className="text-balance">
+        {users.map((user) => (
+          <p key={user.id}>{user.name}</p>
+        ))}
+      </div>
     </div>
   )
 }
