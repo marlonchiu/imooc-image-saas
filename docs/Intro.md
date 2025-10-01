@@ -1,4 +1,4 @@
-# imooc-image-sass
+# imooc-image-saas
 
 [慕课网 | 前端全栈进阶 Nextjs 打造跨框架 SaaS 应用](https://coding.imooc.com/class/835.html)
 
