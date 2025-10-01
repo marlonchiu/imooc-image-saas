@@ -30,4 +30,11 @@ npx drizzle-kit studio
 ```shell
 # 访问校验登录
 # http://localhost:3000/api/auth/signin
+
+
+# https://authjs.dev/getting-started/adapters/drizzle?_gl=1*9low1y*_gcl_au*NjgyMjI1NzUwLjE3NTkyMjQyMDYuNTAwODEyOTI1LjE3NTkyMjQ1MjEuMTc1OTIyNDUyMQ..
+pnpm add @auth/drizzle-adapter
+
+# gitlab callback url
+# http://localhost:3000/api/auth/callback/gitlab
 ```

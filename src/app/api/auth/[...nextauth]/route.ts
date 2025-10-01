@@ -1,35 +1,16 @@
-import NextAuth from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import NextAuth, { AuthOptions } from 'next-auth'
+import GitlabProvider from 'next-auth/providers/gitlab'
+import { DrizzleAdapter } from '@auth/drizzle-adapter'
+import db from '@/server/index'
 
-export const authOptions = {
+export const authOptions: AuthOptions = {
+  adapter: DrizzleAdapter(db),
   // Configure one or more authentication providers
   // https://next-auth.js.org/configuration/providers/credentials
   providers: [
-    CredentialsProvider({
-      // The name to display on the sign in form (e.g. 'Sign in with...')
-      name: 'Credentials',
-      // The credentials is used to generate a suitable form on the sign in page.
-      // You can specify whatever fields you are expecting to be submitted.
-      // e.g. domain, username, password, 2FA token, etc.
-      // You can pass any HTML attribute to the <input> tag through the object.
-      credentials: {
-        username: { label: 'Username', type: 'text', placeholder: 'jsmith' },
-        password: { label: 'Password', type: 'password' }
-      },
-      async authorize(credentials, req) {
-        console.log(credentials)
-
-        if (!credentials) {
-          return null
-        }
-
-        const { username, password } = credentials
-        if (username !== 'admin' || password !== 'admin123') {
-          return null
-        }
-
-        return { id: '1', ...credentials }
-      }
+    GitlabProvider({
+      clientId: process.env.GITLAB_CLIENT_ID,
+      clientSecret: process.env.GITLAB_CLIENT_SECRET
     })
   ]
 }
