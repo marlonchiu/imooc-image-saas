@@ -37,4 +37,7 @@ pnpm add @auth/drizzle-adapter
 
 # gitlab callback url
 # http://localhost:3000/api/auth/callback/gitlab
+
+# github callback url
+# http://localhost:3000/api/auth/callback
 ```
