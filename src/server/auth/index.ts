@@ -2,7 +2,7 @@ import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { AuthOptions, getServerSession as nextAuthGetServerSession } from 'next-auth'
 import GitlabProvider from 'next-auth/providers/gitlab'
 import GitHubProvider from 'next-auth/providers/github'
-import db from '@/server/index'
+import db from '@/server/db/db'
 
 // 环境变量检查
 if (!process.env.GITHUB_ID || !process.env.GITHUB_SECRET) {
