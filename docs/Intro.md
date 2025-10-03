@@ -51,4 +51,6 @@ pnpm add @auth/drizzle-adapter
 
 ```shell
 pnpm add zod
+
+pnpm add drizzle-zod
 ```
