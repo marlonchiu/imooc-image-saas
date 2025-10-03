@@ -4,9 +4,13 @@
 
 ## 参考资源
 
-> [Next.js](https://nextjs.org/docs) > [Tailwind CSS](https://tailwindcss.com/docs) > [shadcn/ui](https://ui.shadcn.com/docs) > [Drizzle ORM](https://orm.drizzle.team/)
+> [Next.js](https://nextjs.org/docs)
+> [Tailwind CSS](https://tailwindcss.com/docs)
+> [shadcn/ui](https://ui.shadcn.com/docs)
+> [Drizzle ORM](https://orm.drizzle.team/)
 >
-> [clerk](https://clerk.com/docs) > [next-auth](https://next-auth.js.org/getting-started/example)
+> [clerk](https://clerk.com/docs)
+> [next-auth](https://next-auth.js.org/getting-started/example)
 
 ## drizzle orm 操作
 
