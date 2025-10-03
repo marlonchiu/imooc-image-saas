@@ -11,6 +11,7 @@
 >
 > [clerk](https://clerk.com/docs)
 > [next-auth](https://next-auth.js.org/getting-started/example)
+> [Zod](https://zod.dev/)
 
 ## drizzle orm 操作
 
@@ -44,4 +45,10 @@ pnpm add @auth/drizzle-adapter
 
 # github callback url
 # http://localhost:3000/api/auth/callback
+```
+
+## Zod 数据验证
+
+```shell
+pnpm add zod
 ```
