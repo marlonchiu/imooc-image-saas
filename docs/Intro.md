@@ -13,6 +13,7 @@
 > [next-auth](https://next-auth.js.org/getting-started/example)
 > [Zod](https://zod.dev/)
 > [tRPC](https://trpc.io/docs/server/routers)
+> [React Query Integration](https://trpc.io/docs/client/react/setup)
 
 ## drizzle orm 操作
 
@@ -59,4 +60,6 @@ pnpm add drizzle-zod
 ## tRPC
 ```shell
 pnpm add @trpc/server @trpc/client
+
+pnpm add @trpc/react-query @tanstack/react-query
 ```

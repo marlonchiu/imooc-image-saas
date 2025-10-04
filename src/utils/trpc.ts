@@ -14,7 +14,7 @@ export async function createTRPCContext() {
 
 const t = initTRPC.context<typeof createTRPCContext>().create()
 
-const { router, procedure } = t
+const { router, procedure, createCallerFactory } = t
 
 const logMiddleware = t.middleware(async ({ ctx, next }) => {
   const start = Date.now()
@@ -54,3 +54,6 @@ export const testRouter = router({
 })
 
 export type TestRouter = typeof testRouter
+
+// 1. create a caller-function for your router
+export const serverCaller = createCallerFactory(testRouter)
