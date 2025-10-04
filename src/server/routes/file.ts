@@ -3,6 +3,11 @@ import { protectedProcedure, router } from '../trpc'
 import { S3Client, PutObjectCommand, PutObjectCommandInput, S3ClientConfig } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
+import { files } from '../db/schema'
+// import db from '../db/db'
+import db from '@/server/db/db'
+import { v4 as uuidV4 } from 'uuid'
+
 const { COS_APP_ID, COS_APP_SECRET, COS_APP_BUCKET, COS_APP_API_ENDPOINT, COS_APP_REGION } = process.env
 
 export const fileRoutes = router({
@@ -46,5 +51,30 @@ export const fileRoutes = router({
         url,
         method: 'PUT' as const
       }
+    }),
+  saveFile: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        path: z.string(),
+        type: z.string()
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { session } = ctx
+      const url = new URL(input.path)
+      const photo = await db
+        .insert(files)
+        .values({
+          ...input,
+          id: uuidV4(),
+          path: url.pathname,
+          url: url.toString(),
+          contentType: input.type,
+          userId: session.user.id
+        })
+        .returning()
+
+      return photo[0]
     })
 })

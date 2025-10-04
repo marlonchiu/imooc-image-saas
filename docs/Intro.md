@@ -75,4 +75,7 @@ pnpm add use-sync-external-store
 pnpm add @types/use-sync-external-store --save-dev
 
 pnpm add @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
+
+# 更新数据库
+npx drizzle-kit up
 ```
