@@ -17,6 +17,7 @@
 >
 > [Amazon S3](https://aws.amazon.com/cn/s3/)
 > [腾讯云 | 使用 AWS S3 SDK 访问 COS](https://cloud.tencent.com/document/product/436/37421)
+> [uppy 上传](https://uppy.io/docs/quick-start/)
 
 ## drizzle orm 操作
 
@@ -65,4 +66,11 @@ pnpm add drizzle-zod
 pnpm add @trpc/server @trpc/client
 
 pnpm add @trpc/react-query @tanstack/react-query
+```
+
+## uppy
+```shell
+pnpm add @uppy/core @uppy/aws-s3
+pnpm add use-sync-external-store
+pnpm add @types/use-sync-external-store --save-dev
 ```
