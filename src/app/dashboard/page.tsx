@@ -7,7 +7,9 @@ import { useUppyState } from './useUppyState'
 import { trpcPureClient, trpcClientReact } from '@/utils/api'
 import { Button } from '@/components/ui/button'
 import { UploadButton } from '@/components/feature/UploadButton'
+import { Dropzone } from '@/components/feature/Dropzone'
 import Image from 'next/image'
+import { cn } from '@/lib/utils'
 
 export default function Index() {
   const [uppy] = useState(() => {
@@ -53,7 +55,7 @@ export default function Index() {
   console.log(fileList)
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto p-2">
       <div>
         <UploadButton uppy={uppy}></UploadButton>
         <Button
@@ -65,28 +67,38 @@ export default function Index() {
         </Button>
       </div>
       {isPending && <div>Loading</div>}
-      <div className="flex flex-wrap gap-4">
-        {fileList?.map((file) => {
-          const isImage = file.contentType.startsWith('image')
-
+      <Dropzone uppy={uppy}>
+        {(dragging) => {
           return (
-            <div key={file.id} className="w-56 h-56 flex justify-center items-center border">
-              {isImage ? (
-                <img src={file.url} alt={file.name} />
-              ) : (
-                <Image src="/unknown-file-types.png" alt="unknown file type" width={100} height={100}></Image>
+            <div className={cn('relative flex flex-wrap gap-4', dragging && 'border border-dashed')}>
+              {dragging && (
+                <div className="absolute inset-0 bg-secondary/30 flex justify-center items-center text-3xl">
+                  Drop File Here to Upload
+                </div>
               )}
+              {fileList?.map((file) => {
+                const isImage = file.contentType.startsWith('image')
+
+                return (
+                  <div key={file.id} className="w-56 h-56 flex justify-center items-center border">
+                    {isImage ? (
+                      <img src={file.url} alt={file.name} />
+                    ) : (
+                      <Image src="/unknown-file-types.png" alt="unknown file type" width={100} height={100}></Image>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           )
-        })}
-      </div>
-      {/*
+        }}
+      </Dropzone>
+
       {files.map((file) => {
         const url = URL.createObjectURL(file.data)
 
         return <img src={url} key={file.id} />
       })}
-       */}
     </div>
   )
 }
