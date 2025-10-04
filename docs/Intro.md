@@ -12,6 +12,7 @@
 > [clerk](https://clerk.com/docs)
 > [next-auth](https://next-auth.js.org/getting-started/example)
 > [Zod](https://zod.dev/)
+> [tRPC](https://trpc.io/docs/server/routers)
 
 ## drizzle orm 操作
 
@@ -53,4 +54,9 @@ pnpm add @auth/drizzle-adapter
 pnpm add zod
 
 pnpm add drizzle-zod
+```
+
+## tRPC
+```shell
+pnpm add @trpc/server @trpc/client
 ```

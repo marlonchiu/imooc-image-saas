@@ -1,16 +1,24 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { redirect } from 'next/navigation'
 import { UserInfo, SessionProvider } from './UserInfo'
 import { getServerSession } from '@/server/auth'
-export default async function Home() {
-  const session = await getServerSession()
-  console.log('🚀 ~ Home ~ session:', session)
+import { useEffect } from 'react'
+import { trpcClient } from '@/utils/api'
+export default  function Home() {
+  // const session = await getServerSession()
+  // console.log('🚀 ~ Home ~ session:', session)
 
-  if (!session?.user) {
-    redirect('/api/auth/signin')
-  }
+  useEffect(() => {
+    trpcClient.greeting.query()
+  }, [])
+
+  // if (!session?.user) {
+  //   redirect('/api/auth/signin')
+  // }
 
   return (
     <div className="h-screen flex justify-center items-center ">
