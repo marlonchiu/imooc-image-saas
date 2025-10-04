@@ -4,21 +4,28 @@ import Uppy from '@uppy/core'
 import AwsS3 from '@uppy/aws-s3'
 import { useState } from 'react'
 import { useUppyState } from './useUppyState'
+import { trpcPureClient } from '@/utils/api'
+import { Button } from '@/components/ui/button'
 export default function Index() {
   const [uppy] = useState(() => {
     const uppy = new Uppy()
     uppy.use(AwsS3, {
       shouldUseMultipart: false,
-      getUploadParameters() {
-        return {
-          url: ''
-        }
+      getUploadParameters(file) {
+        console.log('🚀 ~ getUploadParameters ~ file:', file)
+
+        return trpcPureClient.file.createPresignedUrl.mutate({
+          filename: file.data instanceof File ? file.data.name : 'test',
+          contentType: file.data.type || '',
+          size: file.data.size || file.size || 0
+        })
       }
     })
     return uppy
   })
 
   const files = useUppyState(uppy, (s) => Object.values(s.files))
+  const progress = useUppyState(uppy, (s) => s.totalProgress)
 
   return (
     <div className="h-screen flex justify-center items-center ">
@@ -28,9 +35,8 @@ export default function Index() {
           if (e.target.files) {
             Array.from(e.target.files).forEach((file) => {
               uppy.addFile({
-                name: file.name,
-                type: file.type,
-                data: file
+                data: file,
+                name: file.name
               })
             })
           }
@@ -42,6 +48,14 @@ export default function Index() {
 
         return <img src={url} key={file.id} />
       })}
+      <Button
+        onClick={() => {
+          uppy.upload()
+        }}
+      >
+        Upload
+      </Button>
+      <div>{progress}</div>
     </div>
   )
 }

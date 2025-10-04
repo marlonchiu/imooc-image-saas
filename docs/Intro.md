@@ -73,4 +73,6 @@ pnpm add @trpc/react-query @tanstack/react-query
 pnpm add @uppy/core @uppy/aws-s3
 pnpm add use-sync-external-store
 pnpm add @types/use-sync-external-store --save-dev
+
+pnpm add @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
 ```
