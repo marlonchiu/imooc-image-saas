@@ -7,6 +7,7 @@ import { files } from '../db/schema'
 // import db from '../db/db'
 import db from '@/server/db/db'
 import { v4 as uuidV4 } from 'uuid'
+import { desc } from 'drizzle-orm'
 
 const { COS_APP_ID, COS_APP_SECRET, COS_APP_BUCKET, COS_APP_API_ENDPOINT, COS_APP_REGION } = process.env
 
@@ -76,5 +77,14 @@ export const fileRoutes = router({
         .returning()
 
       return photo[0]
+    }),
+  listFiles: protectedProcedure.query(async ({ ctx }) => {
+    const { session } = ctx
+    const result = await db.query.files.findMany({
+      where: (files, { eq }) => eq(files.userId, session.user.id),
+      orderBy: [desc(files.createdAt)]
     })
+
+    return result
+  })
 })
