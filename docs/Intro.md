@@ -14,6 +14,9 @@
 > [Zod](https://zod.dev/)
 > [tRPC](https://trpc.io/docs/server/routers)
 > [React Query Integration](https://trpc.io/docs/client/react/setup)
+>
+> [Amazon S3](https://aws.amazon.com/cn/s3/)
+> [腾讯云 | 使用 AWS S3 SDK 访问 COS](https://cloud.tencent.com/document/product/436/37421)
 
 ## drizzle orm 操作
 

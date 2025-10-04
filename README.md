@@ -1,5 +1,14 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+
+### 配置环境变量
+
+复制 `.env.example` 文件为 `.env`，并根据需要修改配置：
+
+```bash
+$ cp .env.example .env
+```
+
 ## Getting Started
 
 First, run the development server:
