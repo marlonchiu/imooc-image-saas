@@ -10,6 +10,7 @@ import { UploadButton } from '@/components/feature/UploadButton'
 import { Dropzone } from '@/components/feature/Dropzone'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { usePasteFile } from '@/hooks/usePasteFile'
 
 export default function Index() {
   const [uppy] = useState(() => {
@@ -53,6 +54,17 @@ export default function Index() {
 
   const { data: fileList, isPending } = trpcClientReact.file.listFiles.useQuery()
   console.log(fileList)
+
+  usePasteFile({
+    onFilesPaste: (files) => {
+      uppy.addFiles(
+        files.map((file) => ({
+          data: file,
+          name: file.name
+        }))
+      )
+    }
+  })
 
   return (
     <div className="container mx-auto p-2">
