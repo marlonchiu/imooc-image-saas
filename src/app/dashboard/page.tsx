@@ -68,8 +68,7 @@ export default function Index() {
 
   return (
     <div className="container mx-auto p-2">
-      <div>
-        <UploadButton uppy={uppy}></UploadButton>
+      <div className="flex justify-between items-center mb-4">
         <Button
           onClick={() => {
             uppy.upload()
@@ -77,6 +76,7 @@ export default function Index() {
         >
           Upload
         </Button>
+        <UploadButton uppy={uppy}></UploadButton>
       </div>
       {isPending && <div>Loading</div>}
       <Dropzone uppy={uppy}>
