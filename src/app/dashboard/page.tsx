@@ -8,6 +8,7 @@ import { trpcPureClient, trpcClientReact } from '@/utils/api'
 import { Button } from '@/components/ui/button'
 import { UploadButton } from '@/components/feature/UploadButton'
 import { Dropzone } from '@/components/feature/Dropzone'
+import { UploadPreview } from '@/components/feature/UploadPreview'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { usePasteFile } from '@/hooks/usePasteFile'
@@ -111,6 +112,8 @@ export default function Index() {
 
         return <img src={url} key={file.id} />
       })}
+
+      <UploadPreview uppy={uppy} />
     </div>
   )
 }
