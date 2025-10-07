@@ -2,8 +2,8 @@ import Uppy, { type UppyFile, type UploadResult } from '@uppy/core'
 import { useState, useEffect } from 'react'
 import { useUppyState } from '@/app/dashboard/useUppyState'
 import { trpcPureClient, trpcClientReact } from '@/utils/api'
-import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { LocalFileItem, RemoteFileItem } from './FileItem'
 export function FileList({ uppy }: { uppy: Uppy }) {
   const { data: fileList, isPending } = trpcClientReact.file.listFiles.useQuery()
 
@@ -64,30 +64,17 @@ export function FileList({ uppy }: { uppy: Uppy }) {
           uploadingFileIDs.map((id) => {
             const file = uppyFiles[id]
 
-            const isImage = file.data.type.startsWith('image')
-            const url = URL.createObjectURL(file.data)
-
             return (
               <div key={file.id} className="w-56 h-56 flex justify-center items-center border border-red-500">
-                {isImage ? (
-                  <img src={url} alt={file.name} />
-                ) : (
-                  <Image src="/unknown-file-types.png" alt="unknown file type" width={100} height={100}></Image>
-                )}
+                <LocalFileItem file={file.data as File} />
               </div>
             )
           })}
 
         {fileList?.map((file) => {
-          const isImage = file.contentType.startsWith('image')
-
           return (
             <div key={file.id} className="w-56 h-56 flex justify-center items-center border">
-              {isImage ? (
-                <img src={file.url} alt={file.name} />
-              ) : (
-                <Image src="/unknown-file-types.png" alt="unknown file type" width={100} height={100}></Image>
-              )}
+              <RemoteFileItem contentType={file.contentType} name={file.name} url={file.url} />
             </div>
           )
         })}
