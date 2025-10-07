@@ -1,6 +1,6 @@
 'use client'
 
-import Uppy, { type UppyFile, type UploadResult } from '@uppy/core'
+import Uppy from '@uppy/core'
 import AwsS3 from '@uppy/aws-s3'
 import { useState } from 'react'
 
@@ -43,8 +43,8 @@ export default function Index() {
   })
 
   return (
-    <div className="container mx-auto p-2">
-      <div className="flex justify-between items-center mb-4">
+    <div className="mx-auto h-screen">
+      <div className="container flex justify-between items-center h-[60px]">
         <Button
           onClick={() => {
             uppy.upload()
@@ -55,7 +55,7 @@ export default function Index() {
         <UploadButton uppy={uppy}></UploadButton>
       </div>
 
-      <Dropzone uppy={uppy} className="relative">
+      <Dropzone uppy={uppy} className="relative h-[calc(100%-60px)]">
         {(dragging) => {
           return (
             <>

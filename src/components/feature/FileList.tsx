@@ -1,13 +1,16 @@
 import Uppy, { type UppyFile, type UploadResult } from '@uppy/core'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useUppyState } from '@/app/dashboard/useUppyState'
 import { trpcPureClient, trpcClientReact, AppRouter } from '@/utils/api'
 import { cn } from '@/lib/utils'
 import { LocalFileItem, RemoteFileItem } from './FileItem'
 import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 import { inferRouterOutputs } from '@trpc/server'
 type FileResult = inferRouterOutputs<AppRouter>['file']['listFiles']
+
+const limit = 10
 export function FileList({ uppy }: { uppy: Uppy }) {
   const {
     data: infinityQueryData,
@@ -15,14 +18,14 @@ export function FileList({ uppy }: { uppy: Uppy }) {
     fetchNextPage
   } = trpcClientReact.file.infinityQueryFiles.useInfiniteQuery(
     {
-      limit: 3
+      limit: limit
     },
     {
       getNextPageParam: (resp) => resp.nextCursor
     }
   )
 
-  const fileList = infinityQueryData ? infinityQueryData?.pages.flatMap((page) => page.items) : []
+  const filesList = infinityQueryData ? infinityQueryData?.pages.flatMap((page) => page.items) : []
 
   const utils = trpcClientReact.useUtils()
 
@@ -39,11 +42,22 @@ export function FileList({ uppy }: { uppy: Uppy }) {
             type: file.data.type
           })
           .then((resp) => {
-            utils.file.listFiles.setData(void 0, (prev) => {
+            utils.file.infinityQueryFiles.setInfiniteData({ limit: limit }, (prev) => {
               if (!prev) {
                 return prev
               }
-              return [resp, ...prev]
+              return {
+                ...prev,
+                pages: prev.pages.map((page, index) => {
+                  if (index === 0) {
+                    return {
+                      ...page,
+                      items: [resp, ...page.items]
+                    }
+                  }
+                  return page
+                })
+              }
             })
           })
       }
@@ -71,11 +85,39 @@ export function FileList({ uppy }: { uppy: Uppy }) {
     }
   }, [uppy, utils])
 
+  // ----------------------> intersection
+
+  const bottomRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (bottomRef.current) {
+      const observer = new IntersectionObserver(
+        (e) => {
+          console.log('🚀 ~ IntersectionObserver ~ e:', e)
+          if (e[0].intersectionRatio > 0.1) {
+            fetchNextPage()
+          }
+        },
+        {
+          threshold: 0.1
+        }
+      )
+
+      observer.observe(bottomRef.current)
+      const element = bottomRef.current
+
+      return () => {
+        observer.unobserve(element)
+        observer.disconnect()
+      }
+    }
+  }, [fetchNextPage])
+
   return (
-    <>
+    <ScrollArea className="h-full">
       {isPending && <div>Loading</div>}
 
-      <div className={cn('relative flex flex-wrap gap-4')}>
+      <div className={cn('relative flex flex-wrap justify-center gap-4 container')}>
         {/* 正在上传 */}
         {uploadingFileIDs.length > 0 &&
           uploadingFileIDs.map((id) => {
@@ -88,7 +130,7 @@ export function FileList({ uppy }: { uppy: Uppy }) {
             )
           })}
 
-        {fileList?.map((file) => {
+        {filesList?.map((file) => {
           return (
             <div key={file.id} className="w-56 h-56 flex justify-center items-center border">
               <RemoteFileItem contentType={file.contentType} name={file.name} url={file.url} />
@@ -96,7 +138,11 @@ export function FileList({ uppy }: { uppy: Uppy }) {
           )
         })}
       </div>
-      <Button onClick={() => fetchNextPage()}>Load Next Page</Button>
-    </>
+      <div ref={bottomRef} className={cn('justify-center p-8 hidden', filesList.length > 0 && 'flex')}>
+        <Button variant="ghost" onClick={() => fetchNextPage()}>
+          Load Next Page
+        </Button>
+      </div>
+    </ScrollArea>
   )
 }

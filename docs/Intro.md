@@ -18,6 +18,8 @@
 > [Amazon S3](https://aws.amazon.com/cn/s3/)
 > [腾讯云 | 使用 AWS S3 SDK 访问 COS](https://cloud.tencent.com/document/product/436/37421)
 > [uppy 上传](https://uppy.io/docs/quick-start/)
+> 
+> [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
 
 ## drizzle orm 操作
 
