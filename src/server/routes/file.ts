@@ -7,7 +7,7 @@ import { files } from '../db/schema'
 // import db from '../db/db'
 import db from '@/server/db/db'
 import { v4 as uuidV4 } from 'uuid'
-import { desc } from 'drizzle-orm'
+import { desc, sql } from 'drizzle-orm'
 
 const { COS_APP_ID, COS_APP_SECRET, COS_APP_BUCKET, COS_APP_API_ENDPOINT, COS_APP_REGION } = process.env
 
@@ -86,5 +86,41 @@ export const fileRoutes = router({
     })
 
     return result
-  })
+  }),
+  infinityQueryFiles: protectedProcedure
+    .input(
+      z.object({
+        cursor: z
+          .object({
+            id: z.string(),
+            createdAt: z.string()
+          })
+          .optional(),
+        limit: z.number().default(10)
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { cursor, limit } = input
+      const { session } = ctx
+      const result = await db
+        .select()
+        .from(files)
+        .limit(limit)
+        .where(
+          cursor
+            ? sql`("files"."created_at", "files"."id") < (${new Date(cursor.createdAt).toISOString()}, ${cursor.id})`
+            : undefined
+        )
+        .orderBy(desc(files.createdAt))
+      return {
+        items: result,
+        nextCursor:
+          result.length > 0
+            ? {
+                createdAt: result[result.length - 1].createdAt!,
+                id: result[result.length - 1].id
+              }
+            : null
+      }
+    })
 })

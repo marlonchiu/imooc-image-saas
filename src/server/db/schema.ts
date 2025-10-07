@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm'
-import { boolean, timestamp, pgTable, text, primaryKey, integer, date, uuid, varchar } from 'drizzle-orm/pg-core'
+import { boolean, timestamp, pgTable, text, primaryKey, integer, date, uuid, varchar, index } from 'drizzle-orm/pg-core'
 import type { AdapterAccount } from 'next-auth/adapters'
 
 export const users = pgTable('user', {
@@ -87,17 +87,23 @@ export const authenticators = pgTable(
   ]
 )
 
-export const files = pgTable('files', {
-  id: uuid('id').notNull().primaryKey(),
-  name: varchar('name', { length: 100 }).notNull(),
-  type: varchar('type', { length: 100 }).notNull(),
-  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow(),
-  deletedAt: timestamp('deleted_at', { mode: 'date' }),
-  path: varchar('path', { length: 1024 }).notNull(),
-  url: varchar('url', { length: 1024 }).notNull(),
-  userId: text('user_id').notNull(),
-  contentType: varchar('content_type', { length: 100 }).notNull()
-})
+export const files = pgTable(
+  'files',
+  {
+    id: uuid('id').notNull().primaryKey(),
+    name: varchar('name', { length: 100 }).notNull(),
+    type: varchar('type', { length: 100 }).notNull(),
+    createdAt: timestamp('created_at', { mode: 'date' }).defaultNow(),
+    deletedAt: timestamp('deleted_at', { mode: 'date' }),
+    path: varchar('path', { length: 1024 }).notNull(),
+    url: varchar('url', { length: 1024 }).notNull(),
+    userId: text('user_id').notNull(),
+    contentType: varchar('content_type', { length: 100 }).notNull()
+  },
+  (table) => ({
+    cursorIdx: index('cursor_idx').on(table.id, table.createdAt)
+  })
+)
 
 export const photosRelations = relations(files, ({ one }) => ({
   photos: one(users, { fields: [files.userId], references: [users.id] })
