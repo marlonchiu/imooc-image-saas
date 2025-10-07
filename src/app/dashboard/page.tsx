@@ -1,6 +1,6 @@
 'use client'
 
-import Uppy from '@uppy/core'
+import Uppy, { type UppyFile, type UploadResult } from '@uppy/core'
 import AwsS3 from '@uppy/aws-s3'
 import { useState, useEffect } from 'react'
 import { useUppyState } from './useUppyState'
@@ -32,30 +32,57 @@ export default function Index() {
     return uppy
   })
 
-  const files = useUppyState(uppy, (s) => Object.values(s.files))
-  const progress = useUppyState(uppy, (s) => s.totalProgress)
+  const utils = trpcClientReact.useUtils()
+
+  const { data: fileList, isPending } = trpcClientReact.file.listFiles.useQuery()
+  const [uploadingFileIDs, setUploadingFileIDs] = useState<string[]>([])
+  const uppyFiles = useUppyState(uppy, (s) => s.files)
+
+  // const files = useUppyState(uppy, (s) => Object.values(s.files))
 
   useEffect(() => {
-    const handler = (file, resp) => {
+    const handler = (file, response) => {
       if (file) {
-        trpcPureClient.file.saveFile.mutate({
-          name: file.data instanceof File ? file.data.name : 'test',
-          path: resp.uploadURL ?? '',
-          type: file.data.type
-        })
+        trpcPureClient.file.saveFile
+          .mutate({
+            name: file.data instanceof File ? file.data.name : 'test',
+            path: response.uploadURL ?? '',
+            type: file.data.type
+          })
+          .then((resp) => {
+            utils.file.listFiles.setData(void 0, (prev) => {
+              if (!prev) {
+                return prev
+              }
+              return [resp, ...prev]
+            })
+          })
       }
     }
 
+    const uploadProgressHandler = (data) => {
+      // 确保 fileIDs 存在且可迭代
+      const fileIDs = Array.isArray(data.fileIDs) ? data.fileIDs : Object.keys(data.files || {})
+
+      setUploadingFileIDs((currentFiles) => [...currentFiles, ...fileIDs])
+    }
+
+    const completeHandler = () => {
+      setUploadingFileIDs([])
+    }
+
+    uppy.on('upload', uploadProgressHandler)
     uppy.on('upload-success', handler)
+    uppy.on('complete', completeHandler)
 
     return () => {
       uppy.off('upload-success', handler)
+      uppy.off('upload', uploadProgressHandler)
+      uppy.off('complete', completeHandler)
     }
   }, [uppy])
 
-  const { data: fileList, isPending } = trpcClientReact.file.listFiles.useQuery()
-  console.log(fileList)
-
+  // 监听粘贴事件
   usePasteFile({
     onFilesPaste: (files) => {
       uppy.addFiles(
@@ -89,6 +116,26 @@ export default function Index() {
                   Drop File Here to Upload
                 </div>
               )}
+
+              {/* 正在上传 */}
+              {uploadingFileIDs.length > 0 &&
+                uploadingFileIDs.map((id) => {
+                  const file = uppyFiles[id]
+
+                  const isImage = file.data.type.startsWith('image')
+                  const url = URL.createObjectURL(file.data)
+
+                  return (
+                    <div key={file.id} className="w-56 h-56 flex justify-center items-center border border-red-500">
+                      {isImage ? (
+                        <img src={url} alt={file.name} />
+                      ) : (
+                        <Image src="/unknown-file-types.png" alt="unknown file type" width={100} height={100}></Image>
+                      )}
+                    </div>
+                  )
+                })}
+
               {fileList?.map((file) => {
                 const isImage = file.contentType.startsWith('image')
 
@@ -106,12 +153,6 @@ export default function Index() {
           )
         }}
       </Dropzone>
-
-      {files.map((file) => {
-        const url = URL.createObjectURL(file.data)
-
-        return <img src={url} key={file.id} />
-      })}
 
       <UploadPreview uppy={uppy} />
     </div>
