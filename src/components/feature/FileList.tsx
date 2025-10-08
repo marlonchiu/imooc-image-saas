@@ -165,7 +165,7 @@ export function FileList({ uppy, orderBy }: { uppy: Uppy; orderBy: FilesOrderByC
                 <CopyFileUrl url={file.url}></CopyFileUrl>
                 <DeleteFile fileId={file.id} onDeleteSuccess={handleDeleteFile}></DeleteFile>
               </div>
-              <RemoteFileItem contentType={file.contentType} name={file.name} url={file.url} />
+              <RemoteFileItem contentType={file.contentType} name={file.name} id={file.id} />
             </div>
           )
         })}

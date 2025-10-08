@@ -20,6 +20,8 @@
 > [uppy 上传](https://uppy.io/docs/quick-start/)
 >
 > [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
+>
+> [sharp](https://www.npmjs.com/package/sharp)
 
 ## drizzle orm 操作
 
@@ -85,4 +87,7 @@ npx drizzle-kit up
 ## 文件操作
 ```shell
 pnpm add copy-to-clipboard
+
+# 图片处理
+pnpm add sharp
 ```
