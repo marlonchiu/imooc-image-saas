@@ -13,6 +13,8 @@ import { FileList } from '@/components/feature/FileList'
 import { usePasteFile } from '@/hooks/usePasteFile'
 import { type FilesOrderByColumn } from '@/server/routes/file'
 import { MoveUp, MoveDown } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 
 export default function Index() {
   const [uppy] = useState(() => {
@@ -48,6 +50,11 @@ export default function Index() {
     order: 'desc'
   })
 
+  const [showDeleted, setShowDeleted] = useState(false)
+  const onCheckedChange = (value: boolean) => {
+    setShowDeleted(value)
+  }
+
   return (
     <div className="mx-auto h-screen">
       <div className="container flex justify-between items-center h-[60px]">
@@ -58,16 +65,23 @@ export default function Index() {
         >
           Upload
         </Button> */}
-        <Button
-          onClick={() => {
-            setOrderBy((current) => ({
-              ...current,
-              order: current?.order === 'asc' ? 'desc' : 'asc'
-            }))
-          }}
-        >
-          Created At {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
-        </Button>
+        <div className="flex justify-start items-center">
+          <Button
+            onClick={() => {
+              setOrderBy((current) => ({
+                ...current,
+                order: current?.order === 'asc' ? 'desc' : 'asc'
+              }))
+            }}
+          >
+            Created At {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
+          </Button>
+          <div className="flex items-center space-x-2 ml-2">
+            <Switch id="is-show-deleted" checked={showDeleted} onCheckedChange={onCheckedChange} />
+            <Label htmlFor="is-show-deleted">Show Deleted</Label>
+          </div>
+        </div>
+
         <UploadButton uppy={uppy}></UploadButton>
       </div>
 
@@ -81,7 +95,7 @@ export default function Index() {
                 </div>
               )}
 
-              <FileList uppy={uppy} orderBy={orderBy} />
+              <FileList uppy={uppy} orderBy={orderBy} showDeleted={showDeleted} />
             </>
           )
         }}

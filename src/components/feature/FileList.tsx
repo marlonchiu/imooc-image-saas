@@ -13,8 +13,16 @@ import { inferRouterOutputs } from '@trpc/server'
 type FileResult = inferRouterOutputs<AppRouter>['file']['listFiles']
 
 const limit = 10
-export function FileList({ uppy, orderBy }: { uppy: Uppy; orderBy: FilesOrderByColumn }) {
-  const queryKey = { limit, orderBy }
+export function FileList({
+  uppy,
+  orderBy,
+  showDeleted
+}: {
+  uppy: Uppy
+  orderBy: FilesOrderByColumn
+  showDeleted: boolean
+}) {
+  const queryKey = { limit, orderBy, showDeleted }
 
   const {
     data: infinityQueryData,

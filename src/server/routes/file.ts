@@ -107,13 +107,14 @@ export const fileRoutes = router({
           })
           .optional(),
         limit: z.number().default(10),
-        orderBy: filesOrderByColumnSchema
+        orderBy: filesOrderByColumnSchema,
+        showDeleted: z.boolean().default(false)
       })
     )
     .query(async ({ ctx, input }) => {
       const { session } = ctx
-      const { cursor, limit, orderBy = { field: 'createdAt', order: 'desc' } } = input
-      const deletedFilter = isNull(files.deletedAt)
+      const { cursor, limit, orderBy = { field: 'createdAt', order: 'desc' }, showDeleted } = input
+      const deletedFilter = showDeleted ? undefined : isNull(files.deletedAt)
 
       const statement = db
         .select()
