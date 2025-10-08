@@ -20,9 +20,12 @@ export function FileList({ uppy, orderBy }: { uppy: Uppy; orderBy: FilesOrderByC
     data: infinityQueryData,
     isPending,
     fetchNextPage
-  } = trpcClientReact.file.infinityQueryFiles.useInfiniteQuery(queryKey, {
-    getNextPageParam: (resp) => resp.nextCursor
-  })
+  } = trpcClientReact.file.infinityQueryFiles.useInfiniteQuery(
+    { ...queryKey },
+    {
+      getNextPageParam: (resp) => resp.nextCursor
+    }
+  )
 
   const filesList = infinityQueryData ? infinityQueryData?.pages.flatMap((page) => page.items) : []
   // const filesList = infinityQueryData
@@ -46,7 +49,7 @@ export function FileList({ uppy, orderBy }: { uppy: Uppy; orderBy: FilesOrderByC
             type: file.data.type
           })
           .then((resp) => {
-            utils.file.infinityQueryFiles.setInfiniteData(queryKey, (prev) => {
+            utils.file.infinityQueryFiles.setInfiniteData({ ...queryKey }, (prev) => {
               if (!prev) {
                 return prev
               }
@@ -118,7 +121,7 @@ export function FileList({ uppy, orderBy }: { uppy: Uppy; orderBy: FilesOrderByC
   }, [fetchNextPage])
 
   const handleDeleteFile = (fileId: string) => {
-    utils.file.infinityQueryFiles.setInfiniteData(queryKey, (prev) => {
+    utils.file.infinityQueryFiles.setInfiniteData({ ...queryKey }, (prev) => {
       if (!prev) {
         return prev
       }
