@@ -78,7 +78,7 @@ export default function Index() {
           </Button>
           <div className="flex items-center space-x-2 ml-2">
             <Switch id="is-show-deleted" checked={showDeleted} onCheckedChange={onCheckedChange} />
-            <Label htmlFor="is-show-deleted">Show Deleted</Label>
+            <Label htmlFor="is-show-deleted">{showDeleted ? 'Show Deleted' : 'Hide Deleted'}</Label>
           </div>
         </div>
 
