@@ -100,9 +100,11 @@ export const files = pgTable(
     userId: text('user_id').notNull(),
     contentType: varchar('content_type', { length: 100 }).notNull()
   },
-  (table) => ({
-    cursorIdx: index('cursor_idx').on(table.id, table.createdAt)
-  })
+  (files) => [
+    {
+      cursorIdx: index('cursor_idx').on(files.id, files.createdAt)
+    }
+  ]
 )
 
 export const photosRelations = relations(files, ({ one }) => ({

@@ -7,9 +7,19 @@ import { files } from '../db/schema'
 // import db from '../db/db'
 import db from '@/server/db/db'
 import { v4 as uuidV4 } from 'uuid'
-import { desc, sql } from 'drizzle-orm'
+import { sql, desc, asc } from 'drizzle-orm'
 
 const { COS_APP_ID, COS_APP_SECRET, COS_APP_BUCKET, COS_APP_API_ENDPOINT, COS_APP_REGION } = process.env
+
+import { filesCanOrderByColumns } from '../db/validate-schema'
+const filesOrderByColumnSchema = z
+  .object({
+    field: filesCanOrderByColumns.keyof(),
+    order: z.enum(['desc', 'asc'])
+  })
+  .optional()
+
+export type FilesOrderByColumn = z.infer<typeof filesOrderByColumnSchema>
 
 export const fileRoutes = router({
   createPresignedUrl: protectedProcedure
@@ -96,13 +106,15 @@ export const fileRoutes = router({
             createdAt: z.string()
           })
           .optional(),
-        limit: z.number().default(10)
+        limit: z.number().default(10),
+        orderBy: filesOrderByColumnSchema
       })
     )
     .query(async ({ ctx, input }) => {
-      const { cursor, limit } = input
       const { session } = ctx
-      const result = await db
+      const { cursor, limit, orderBy = { field: 'createdAt', order: 'desc' } } = input
+
+      const statement = db
         .select()
         .from(files)
         .limit(limit)
@@ -111,7 +123,11 @@ export const fileRoutes = router({
             ? sql`("files"."created_at", "files"."id") < (${new Date(cursor.createdAt).toISOString()}, ${cursor.id})`
             : undefined
         )
-        .orderBy(desc(files.createdAt))
+      // .orderBy(desc(files.createdAt))
+
+      statement.orderBy(orderBy.order === 'desc' ? desc(files[orderBy.field]) : asc(files[orderBy.field]))
+      const result = await statement
+
       return {
         items: result,
         nextCursor:
