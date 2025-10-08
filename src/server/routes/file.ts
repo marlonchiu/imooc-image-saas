@@ -7,7 +7,7 @@ import { files } from '../db/schema'
 // import db from '../db/db'
 import db from '@/server/db/db'
 import { v4 as uuidV4 } from 'uuid'
-import { sql, desc, asc } from 'drizzle-orm'
+import { sql, desc, asc, eq, and, isNull } from 'drizzle-orm'
 
 const { COS_APP_ID, COS_APP_SECRET, COS_APP_BUCKET, COS_APP_API_ENDPOINT, COS_APP_REGION } = process.env
 
@@ -113,6 +113,7 @@ export const fileRoutes = router({
     .query(async ({ ctx, input }) => {
       const { session } = ctx
       const { cursor, limit, orderBy = { field: 'createdAt', order: 'desc' } } = input
+      const deletedFilter = isNull(files.deletedAt)
 
       const statement = db
         .select()
@@ -120,8 +121,12 @@ export const fileRoutes = router({
         .limit(limit)
         .where(
           cursor
-            ? sql`("files"."created_at", "files"."id") < (${new Date(cursor.createdAt).toISOString()}, ${cursor.id})`
-            : undefined
+            ? and(
+                sql`("files"."created_at", "files"."id") < (${new Date(cursor.createdAt).toISOString()}, ${cursor.id})`,
+                deletedFilter,
+                eq(files.userId, session.user.id)
+              )
+            : and(deletedFilter, eq(files.userId, session.user.id))
         )
       // .orderBy(desc(files.createdAt))
 
@@ -138,5 +143,16 @@ export const fileRoutes = router({
               }
             : null
       }
-    })
+    }),
+  deleteFile: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    const { session } = ctx
+    const id = input
+
+    const photo = await db
+      .update(files)
+      .set({ deletedAt: new Date() })
+      .where(and(eq(files.id, id), eq(files.userId, session.user.id)))
+
+    return photo
+  })
 })
