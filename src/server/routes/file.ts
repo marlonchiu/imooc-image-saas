@@ -68,7 +68,8 @@ export const fileRoutes = router({
       z.object({
         name: z.string(),
         path: z.string(),
-        type: z.string()
+        type: z.string(),
+        appId: z.string()
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -88,10 +89,10 @@ export const fileRoutes = router({
 
       return photo[0]
     }),
-  listFiles: protectedProcedure.query(async ({ ctx }) => {
+  listFiles: protectedProcedure.input(z.object({ appId: z.string() })).query(async ({ ctx, input }) => {
     const { session } = ctx
     const result = await db.query.files.findMany({
-      where: (files, { eq }) => eq(files.userId, session.user.id),
+      where: (files, { eq }) => and(eq(files.appId, input.appId), eq(files.userId, session.user.id)),
       orderBy: [desc(files.createdAt)]
     })
 
@@ -108,6 +109,7 @@ export const fileRoutes = router({
           .optional(),
         limit: z.number().default(10),
         orderBy: filesOrderByColumnSchema,
+        appId: z.string(),
         showDeleted: z.boolean().default(false)
       })
     )
@@ -116,6 +118,7 @@ export const fileRoutes = router({
       const { cursor, limit, orderBy = { field: 'createdAt', order: 'desc' }, showDeleted } = input
       const deletedFilter = showDeleted ? undefined : isNull(files.deletedAt)
       const userFilter = eq(files.userId, session.user.id)
+      const appFilter = eq(files.appId, input.appId)
 
       const statement = db
         .select()
@@ -126,9 +129,10 @@ export const fileRoutes = router({
             ? and(
                 sql`("files"."created_at", "files"."id") < (${new Date(cursor.createdAt).toISOString()}, ${cursor.id})`,
                 deletedFilter,
-                userFilter
+                userFilter,
+                appFilter
               )
-            : and(deletedFilter, userFilter)
+            : and(deletedFilter, userFilter, appFilter)
         )
       // .orderBy(desc(files.createdAt))
 

@@ -14,6 +14,11 @@ export const users = pgTable('user', {
   createAt: date('create_at').defaultNow()
 })
 
+export const usersRelation = relations(users, ({ many }) => ({
+  files: many(files),
+  apps: many(apps)
+}))
+
 export const accounts = pgTable(
   'account',
   {
@@ -98,7 +103,8 @@ export const files = pgTable(
     path: varchar('path', { length: 1024 }).notNull(),
     url: varchar('url', { length: 1024 }).notNull(),
     userId: text('user_id').notNull(),
-    contentType: varchar('content_type', { length: 100 }).notNull()
+    contentType: varchar('content_type', { length: 100 }).notNull(),
+    appId: uuid('app_id').notNull()
   },
   (files) => [
     {
@@ -107,6 +113,22 @@ export const files = pgTable(
   ]
 )
 
-export const photosRelations = relations(files, ({ one }) => ({
-  photos: one(users, { fields: [files.userId], references: [users.id] })
+export const filesRelations = relations(files, ({ one }) => ({
+  files: one(users, { fields: [files.userId], references: [users.id] }),
+  app: one(apps, { fields: [files.appId], references: [apps.id] })
+}))
+
+export const apps = pgTable('apps', {
+  id: uuid('id').notNull().primaryKey(),
+  name: varchar('name', { length: 100 }).notNull(),
+  description: varchar('description', { length: 500 }),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow(),
+  deletedAt: timestamp('deleted_at', { mode: 'date' }),
+  userId: text('user_id').notNull()
+  // storageId: integer("storage_id"),
+})
+
+export const appRelations = relations(apps, ({ one, many }) => ({
+  user: one(users, { fields: [apps.userId], references: [users.id] }),
+  files: many(files)
 }))
