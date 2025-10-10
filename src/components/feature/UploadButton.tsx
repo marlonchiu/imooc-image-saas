@@ -21,7 +21,7 @@ export function UploadButton({ uppy }: { uppy: Uppy }) {
   return (
     <>
       <Button
-        variant="ghost"
+        variant="outline"
         onClick={() => {
           if (inputRef.current) {
             inputRef.current.click()

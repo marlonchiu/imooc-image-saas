@@ -75,7 +75,8 @@ export default function Home() {
               }))
             }}
           >
-            Created At {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
+            Created At{" "}
+            {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
           </Button>
           <div className="flex items-center space-x-2 ml-2">
             <Switch id="is-show-deleted" checked={showDeleted} onCheckedChange={onCheckedChange} />
@@ -85,7 +86,7 @@ export default function Home() {
 
         <UploadButton uppy={uppy}></UploadButton>
 
-        <Link href="/dashboard/a">AAA</Link>
+        {/* <Link href="/dashboard/a">AAA</Link> */}
       </div>
 
       <Dropzone uppy={uppy} className="relative h-[calc(100%-60px)]">

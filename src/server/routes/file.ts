@@ -115,6 +115,7 @@ export const fileRoutes = router({
       const { session } = ctx
       const { cursor, limit, orderBy = { field: 'createdAt', order: 'desc' }, showDeleted } = input
       const deletedFilter = showDeleted ? undefined : isNull(files.deletedAt)
+      const userFilter = eq(files.userId, session.user.id)
 
       const statement = db
         .select()
@@ -125,9 +126,9 @@ export const fileRoutes = router({
             ? and(
                 sql`("files"."created_at", "files"."id") < (${new Date(cursor.createdAt).toISOString()}, ${cursor.id})`,
                 deletedFilter,
-                eq(files.userId, session.user.id)
+                userFilter
               )
-            : and(deletedFilter, eq(files.userId, session.user.id))
+            : and(deletedFilter, userFilter)
         )
       // .orderBy(desc(files.createdAt))
 
