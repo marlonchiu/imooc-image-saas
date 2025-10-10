@@ -31,7 +31,10 @@ export function FileList({
   } = trpcClientReact.file.infinityQueryFiles.useInfiniteQuery(
     { ...queryKey },
     {
-      getNextPageParam: (resp) => resp.nextCursor
+      getNextPageParam: (resp) => resp.nextCursor,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false
     }
   )
 

@@ -15,8 +15,9 @@ import { type FilesOrderByColumn } from '@/server/routes/file'
 import { MoveUp, MoveDown } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
+import Link from 'next/link'
 
-export default function Index() {
+export default function Home() {
   const [uppy] = useState(() => {
     const uppy = new Uppy()
     uppy.use(AwsS3, {
@@ -56,7 +57,7 @@ export default function Index() {
   }
 
   return (
-    <div className="mx-auto h-screen">
+    <div className="mx-auto h-full">
       <div className="container flex justify-between items-center h-[60px]">
         {/* <Button
           onClick={() => {
@@ -83,6 +84,8 @@ export default function Index() {
         </div>
 
         <UploadButton uppy={uppy}></UploadButton>
+
+        <Link href="/dashboard/a">AAA</Link>
       </div>
 
       <Dropzone uppy={uppy} className="relative h-[calc(100%-60px)]">
