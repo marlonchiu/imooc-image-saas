@@ -82,10 +82,12 @@ export default function AppPage({ params: { id: appId } }: { params: { id: strin
             <Label htmlFor="is-show-deleted">{showDeleted ? 'Show Deleted' : 'Hide Deleted'}</Label>
           </div>
         </div>
-
-        <UploadButton uppy={uppy}></UploadButton>
-
-        {/* <Link href="/dashboard/a">AAA</Link> */}
+        <div className="flex justify-center gap-2">
+          <UploadButton uppy={uppy}></UploadButton>
+          <Button asChild>
+            <Link href="./new">New App</Link>
+          </Button>
+        </div>
       </div>
 
       <Dropzone uppy={uppy} className="relative h-[calc(100%-60px)]">
