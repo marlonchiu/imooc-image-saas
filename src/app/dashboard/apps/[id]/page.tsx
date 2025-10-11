@@ -17,7 +17,7 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 
-export default function Home() {
+export default function AppPage({ params: { id: appId } }: { params: { id: string } }) {
   const [uppy] = useState(() => {
     const uppy = new Uppy()
     uppy.use(AwsS3, {
@@ -75,8 +75,7 @@ export default function Home() {
               }))
             }}
           >
-            Created At{" "}
-            {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
+            Created At {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
           </Button>
           <div className="flex items-center space-x-2 ml-2">
             <Switch id="is-show-deleted" checked={showDeleted} onCheckedChange={onCheckedChange} />
@@ -99,7 +98,7 @@ export default function Home() {
                 </div>
               )}
 
-              <FileList uppy={uppy} orderBy={orderBy} showDeleted={showDeleted} />
+              <FileList uppy={uppy} orderBy={orderBy} appId={appId} showDeleted={showDeleted} />
             </>
           )
         }}

@@ -16,13 +16,15 @@ const limit = 10
 export function FileList({
   uppy,
   orderBy,
+  appId,
   showDeleted
 }: {
   uppy: Uppy
   orderBy: FilesOrderByColumn
+  appId: string
   showDeleted: boolean
 }) {
-  const queryKey = { limit, orderBy, showDeleted }
+  const queryKey = { limit, orderBy, appId, showDeleted }
 
   const {
     data: infinityQueryData,
@@ -57,7 +59,8 @@ export function FileList({
           .mutate({
             name: file.data instanceof File ? file.data.name : 'test',
             path: response.uploadURL ?? '',
-            type: file.data.type
+            type: file.data.type,
+            appId
           })
           .then((resp) => {
             utils.file.infinityQueryFiles.setInfiniteData({ ...queryKey }, (prev) => {

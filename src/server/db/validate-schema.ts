@@ -16,4 +16,6 @@ export const filesCanOrderByColumns = queryFileSchema.pick({
   createdAt: true,
   deletedAt: true
 })
-export const createAppsSchema = createInsertSchema(apps)
+export const createAppsSchema = createInsertSchema(apps, {
+  name: () => z.string().min(3)
+})
