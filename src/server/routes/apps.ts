@@ -1,9 +1,11 @@
 import { protectedProcedure, router } from '../trpc'
 import { createAppsSchema } from '../db/validate-schema'
 import db from '@/server/db/db'
-import { apps } from '../db/schema'
+import { apps, storageConfiguration } from '../db/schema'
 import { v4 as uuidV4 } from 'uuid'
-import { desc, eq, and, isNull } from 'drizzle-orm'
+import { desc, eq, and } from 'drizzle-orm'
+import z from 'zod'
+import { TRPCError } from '@trpc/server'
 
 export const appsRoutes = router({
   createApp: protectedProcedure
@@ -32,5 +34,24 @@ export const appsRoutes = router({
     })
 
     return result
-  })
+  }),
+  changeStorage: protectedProcedure
+    .input(z.object({ appId: z.string(), storageId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const { session } = ctx
+
+      const storage = await db.query.storageConfiguration.findFirst({
+        where: (storages, { eq }) => eq(storageConfiguration.id, input.storageId)
+      })
+
+      // check if storage belongs to user
+      if (storage?.userId !== session.user.id) {
+        throw new TRPCError({ code: 'FORBIDDEN' })
+      }
+
+      await db
+        .update(apps)
+        .set({ storageId: input.storageId })
+        .where(and(eq(apps.id, input.appId), eq(apps.userId, session.user.id)))
+    })
 })
