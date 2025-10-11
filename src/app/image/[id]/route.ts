@@ -1,14 +1,30 @@
 import db from '@/server/db/db'
 import { NextResponse, type NextRequest } from 'next/server'
 import { S3Client, GetObjectCommand, GetObjectCommandInput, S3ClientConfig } from '@aws-sdk/client-s3'
+import { TRPCError } from '@trpc/server'
 import sharp from 'sharp'
 
-const { COS_APP_ID, COS_APP_SECRET, COS_APP_BUCKET, COS_APP_API_ENDPOINT, COS_APP_REGION } = process.env
+// const { COS_APP_ID, COS_APP_SECRET, COS_APP_BUCKET, COS_APP_API_ENDPOINT, COS_APP_REGION } = process.env
 
 export async function GET(request: NextRequest, { params: { id } }: { params: { id: string } }) {
   const file = await db.query.files.findFirst({
-    where: (files, { eq }) => eq(files.id, id)
+    where: (files, { eq }) => eq(files.id, id),
+    with: {
+      app: {
+        with: {
+          storage: true
+        }
+      }
+    }
   })
+
+  if (!file?.app.storage) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST'
+    })
+  }
+
+  const storage = file.app.storage.configuration
 
   if (!file || !file.contentType.startsWith('image')) {
     return new NextResponse('', {
@@ -17,16 +33,16 @@ export async function GET(request: NextRequest, { params: { id } }: { params: { 
   }
 
   const params: GetObjectCommandInput = {
-    Bucket: COS_APP_BUCKET,
+    Bucket: storage.bucket,
     Key: file.path
   }
 
   const s3Client = new S3Client({
-    endpoint: COS_APP_API_ENDPOINT,
-    region: COS_APP_REGION,
+    endpoint: storage.apiEndpoint,
+    region: storage.region,
     credentials: {
-      accessKeyId: COS_APP_ID,
-      secretAccessKey: COS_APP_SECRET
+      accessKeyId: storage.accessKeyId,
+      secretAccessKey: storage.secretAccessKey
     }
   } as S3ClientConfig)
 

@@ -26,7 +26,8 @@ export default function AppPage({ params: { id: appId } }: { params: { id: strin
         return trpcPureClient.file.createPresignedUrl.mutate({
           filename: file.data instanceof File ? file.data.name : 'test',
           contentType: file.data.type || '',
-          size: file.data.size || file.size || 0
+          size: file.data.size || file.size || 0,
+          appId: appId
         })
       }
     })

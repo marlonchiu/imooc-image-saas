@@ -2,16 +2,17 @@ import * as z from 'zod'
 import { protectedProcedure, router } from '../trpc'
 import { S3Client, PutObjectCommand, PutObjectCommandInput, S3ClientConfig } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-
+import { TRPCError } from '@trpc/server'
 import { files } from '../db/schema'
 // import db from '../db/db'
 import db from '@/server/db/db'
 import { v4 as uuidV4 } from 'uuid'
 import { sql, desc, asc, eq, and, isNull } from 'drizzle-orm'
 
-const { COS_APP_ID, COS_APP_SECRET, COS_APP_BUCKET, COS_APP_API_ENDPOINT, COS_APP_REGION } = process.env
+// const { COS_APP_ID, COS_APP_SECRET, COS_APP_BUCKET, COS_APP_API_ENDPOINT, COS_APP_REGION } = process.env
 
 import { filesCanOrderByColumns } from '../db/validate-schema'
+
 const filesOrderByColumnSchema = z
   .object({
     field: filesCanOrderByColumns.keyof(),
@@ -27,29 +28,46 @@ export const fileRoutes = router({
       z.object({
         filename: z.string(),
         contentType: z.string(),
-        size: z.number()
+        size: z.number(),
+        appId: z.string()
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const { session } = ctx
       const date = new Date()
 
       const isoString = date.toISOString()
 
       const dateString = isoString.split('T')[0]
+      const app = await db.query.apps.findFirst({
+        where: (apps, { eq }) => eq(apps.id, input.appId),
+        with: { storage: true }
+      })
+
+      if (!app || !app.storage) {
+        throw new TRPCError({ code: 'BAD_REQUEST' })
+      }
+
+      if (app.userId !== session.user.id) {
+        throw new TRPCError({ code: 'FORBIDDEN' })
+      }
+
+      const storage = app.storage
+      const { bucket, apiEndpoint, region, accessKeyId, secretAccessKey } = storage.configuration
 
       const params: PutObjectCommandInput = {
-        Bucket: COS_APP_BUCKET,
+        Bucket: bucket,
         Key: `${dateString}/${input.filename.replaceAll(' ', '_')}`,
         ContentType: input.contentType,
         ContentLength: input.size
       }
 
       const s3Client = new S3Client({
-        endpoint: COS_APP_API_ENDPOINT,
-        region: COS_APP_REGION,
+        endpoint: apiEndpoint,
+        region: region,
         credentials: {
-          accessKeyId: COS_APP_ID,
-          secretAccessKey: COS_APP_SECRET
+          accessKeyId: accessKeyId,
+          secretAccessKey: secretAccessKey
         }
       } as S3ClientConfig)
 
