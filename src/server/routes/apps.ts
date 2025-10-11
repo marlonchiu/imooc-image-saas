@@ -3,6 +3,7 @@ import { createAppsSchema } from '../db/validate-schema'
 import db from '@/server/db/db'
 import { apps } from '../db/schema'
 import { v4 as uuidV4 } from 'uuid'
+import { desc, eq, and, isNull } from 'drizzle-orm'
 
 export const appsRoutes = router({
   createApp: protectedProcedure
@@ -21,5 +22,15 @@ export const appsRoutes = router({
         .returning()
 
       return result[0]
+    }),
+  listApps: protectedProcedure.query(async ({ ctx }) => {
+    const { session } = ctx
+
+    const result = await db.query.apps.findMany({
+      where: (apps, { eq, and, isNull }) => and(eq(apps.userId, session.user.id), isNull(apps.deletedAt)),
+      orderBy: [desc(apps.createdAt)]
     })
+
+    return result
+  })
 })
