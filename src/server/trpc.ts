@@ -45,11 +45,12 @@ export const withAppProcedure = withLoggerProcedure.use(withSessionMiddleware).u
   }
 
   const apiKeyAndAppUser = await db.query.apiKeys.findFirst({
-    where: (apiKeys, { eq, and, isNotNull }) => and(eq(apiKeys.key, apiKey), isNotNull(apiKeys.deletedAt)),
+    where: (apiKeys, { eq, and, isNull }) => and(eq(apiKeys.key, apiKey), isNull(apiKeys.deletedAt)),
     with: {
       app: {
         with: {
-          user: true
+          user: true,
+          storage: true
         }
       }
     }

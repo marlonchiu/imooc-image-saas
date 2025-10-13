@@ -129,7 +129,6 @@ export const files = pgTable(
 
 export const filesRelations = relations(files, ({ one }) => ({
   files: one(users, { fields: [files.userId], references: [users.id] }),
-
   app: one(apps, { fields: [files.appId], references: [apps.id] })
 }))
 
@@ -150,7 +149,7 @@ export const appRelations = relations(apps, ({ one, many }) => ({
     references: [storageConfiguration.id]
   }),
   files: many(files),
-  apiKeys: many(apiKeys),
+  apiKeys: many(apiKeys)
 }))
 
 export type S3StorageConfiguration = {
@@ -166,7 +165,7 @@ export type StorageConfiguration = S3StorageConfiguration
 export const storageConfiguration = pgTable('storageConfiguration', {
   id: serial('id').primaryKey(), // 自增id
   name: varchar('name', { length: 100 }).notNull(),
-  userId: uuid('user_id').notNull(),
+  userId: text('user_id').notNull(),
   configuration: json('configuration').$type<S3StorageConfiguration>().notNull(),
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow(),
   deletedAt: timestamp('deleted_at', { mode: 'date' })
@@ -183,7 +182,7 @@ export const apiKeys = pgTable('apiKeys', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
   key: varchar('key', { length: 100 }).notNull(),
-  appId: varchar('appId', { length: 100 }).notNull(),
+  appId: uuid('appId').notNull(),
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow(),
   deletedAt: timestamp('deleted_at', { mode: 'date' })
 })
