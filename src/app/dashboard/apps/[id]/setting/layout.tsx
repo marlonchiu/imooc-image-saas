@@ -8,28 +8,27 @@ import { usePathname } from 'next/navigation'
 export default function SettingLayout({ params: { id }, children }: { params: { id: string }; children: ReactNode }) {
   const path = usePathname()
 
-  // isStoragePath isApiKeyPath 路径变量
-  const isStoragePath = useMemo(() => `/dashboard/apps/${id}/setting/storage`, [id])
-  const isApiKeyPath = useMemo(() => `/dashboard/apps/${id}/setting/api-key`, [id])
+  const isStorageRoute = useMemo(() => path.startsWith(`/dashboard/apps/${id}/setting/storage`), [path, id])
+  const isApiKeyRoute = useMemo(() => path.startsWith(`/dashboard/apps/${id}/setting/api-key`), [path, id])
 
   return (
     <div className="flex justify-start container mx-auto">
       <div className="flex flex-col w-60 flex-shrink-0 pt-10 gap-4">
         <Button
           size="lg"
-          asChild={path !== isStoragePath}
-          variant={path === isStoragePath ? 'outline' : 'ghost'}
-          disabled={path === isStoragePath}
+          asChild={!isStorageRoute}
+          variant={isStorageRoute ? 'outline' : 'ghost'}
+          disabled={isStorageRoute}
         >
-          {path !== isStoragePath ? <Link href={isStoragePath}>Storage</Link> : 'Storage'}
+          {!isStorageRoute ? <Link href={`/dashboard/apps/${id}/setting/storage`}>Storage</Link> : 'Storage'}
         </Button>
         <Button
           size="lg"
-          asChild={path !== isApiKeyPath}
-          variant={path === isApiKeyPath ? 'outline' : 'ghost'}
-          disabled={path === isApiKeyPath}
+          asChild={!isApiKeyRoute}
+          variant={isApiKeyRoute ? 'outline' : 'ghost'}
+          disabled={isApiKeyRoute}
         >
-          {path !== isApiKeyPath ? <Link href={isApiKeyPath}>Api Key</Link> : 'Api Key'}
+          {!isApiKeyRoute ? <Link href={`/dashboard/apps/${id}/setting/api-key`}>Api Key</Link> : 'Api Key'}
         </Button>
       </div>
       <div className="flex-grow pl-4">{children}</div>

@@ -21,7 +21,7 @@ export default function CreateStoragePage({ params: { id } }: { params: { id: st
 
   const { mutate, isPending } = trpcClientReact.storages.createStorage.useMutation({
     onSuccess: () => {
-      router.push(`/dashboard/apps/${id}/storage`)
+      router.push(`/dashboard/apps/${id}/setting/storage`)
     },
     onError: (error) => {
       toast(error.message)
@@ -31,10 +31,9 @@ export default function CreateStoragePage({ params: { id } }: { params: { id: st
   const onSubmit: SubmitHandler<CreateStorageForm> = (data) => {
     console.log('create storage submit', data)
     mutate(data)
-    // router.push(`/dashboard/apps/${id}/storage`)
   }
   return (
-    <div className="container pt-10 ">
+    <div className="pt-10 ">
       <h1 className="text-3xl mb-6 max-w-md mx-auto">Create Storage</h1>
       <form className="flex flex-col gap-4 max-w-md mx-auto" onSubmit={handleSubmit(onSubmit)}>
         <div>

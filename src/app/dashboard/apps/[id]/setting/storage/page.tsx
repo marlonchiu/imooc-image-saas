@@ -31,7 +31,7 @@ export default function StoragePage({ params: { id } }: { params: { id: string }
     <div className="pt-10">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl mb-6">Storage</h1>
-        <Button>
+        <Button onClick={() => router.push(`/dashboard/apps/${id}/setting/storage/new`)}>
           <Plus></Plus>
         </Button>
       </div>
