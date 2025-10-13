@@ -1,5 +1,7 @@
 import { getServerSession } from '@/server/auth'
 import { initTRPC, TRPCError } from '@trpc/server'
+import { headers } from 'next/headers'
+import db from '@/server/db/db'
 
 const t = initTRPC.context().create()
 
@@ -30,6 +32,37 @@ export const protectedProcedure = withLoggerProcedure.use(withSessionMiddleware)
   return next({
     ctx: {
       session: ctx.session!
+    }
+  })
+})
+
+export const withAppProcedure = withLoggerProcedure.use(withSessionMiddleware).use(async ({ next }) => {
+  const headerList = headers()
+  const apiKey = headerList.get('api-key')
+
+  if (!apiKey) {
+    throw new TRPCError({ code: 'FORBIDDEN' })
+  }
+
+  const apiKeyAndAppUser = await db.query.apiKeys.findFirst({
+    where: (apiKeys, { eq, and, isNotNull }) => and(eq(apiKeys.key, apiKey), isNotNull(apiKeys.deletedAt)),
+    with: {
+      app: {
+        with: {
+          user: true
+        }
+      }
+    }
+  })
+
+  if (!apiKeyAndAppUser) {
+    throw new TRPCError({ code: 'NOT_FOUND' })
+  }
+
+  return next({
+    ctx: {
+      app: apiKeyAndAppUser.app,
+      user: apiKeyAndAppUser.app.user
     }
   })
 })
