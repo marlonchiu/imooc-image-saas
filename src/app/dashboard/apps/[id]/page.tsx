@@ -89,7 +89,7 @@ export default function AppPage({ params: { id: appId } }: { params: { id: strin
             <Link href="./new">New App</Link>
           </Button>
           <Button asChild>
-            <Link href={`/dashboard/apps/${appId}/storage`}>
+            <Link href={`/dashboard/apps/${appId}/setting/storage`}>
               <Settings></Settings>
             </Link>
           </Button>
