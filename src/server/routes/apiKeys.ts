@@ -23,7 +23,8 @@ export const apiKeysRoutes = router({
         .values({
           name: input.name,
           appId: input.appId,
-          key: uuidV4()
+          key: uuidV4(),
+          clientId: uuidV4(),
         })
         .returning()
 

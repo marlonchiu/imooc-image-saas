@@ -2,6 +2,7 @@ import { getServerSession } from '@/server/auth'
 import { initTRPC, TRPCError } from '@trpc/server'
 import { headers } from 'next/headers'
 import db from '@/server/db/db'
+import jwt, { type JwtPayload } from 'jsonwebtoken'
 
 const t = initTRPC.context().create()
 
@@ -39,33 +40,75 @@ export const protectedProcedure = withLoggerProcedure.use(withSessionMiddleware)
 export const withAppProcedure = withLoggerProcedure.use(withSessionMiddleware).use(async ({ next }) => {
   const headerList = headers()
   const apiKey = headerList.get('api-key')
+  const signedToken = headerList.get('signed-token')
 
-  if (!apiKey) {
-    throw new TRPCError({ code: 'FORBIDDEN' })
-  }
-
-  const apiKeyAndAppUser = await db.query.apiKeys.findFirst({
-    where: (apiKeys, { eq, and, isNull }) => and(eq(apiKeys.key, apiKey), isNull(apiKeys.deletedAt)),
-    with: {
-      app: {
-        with: {
-          user: true,
-          storage: true
+  if (apiKey) {
+    const apiKeyAndAppUser = await db.query.apiKeys.findFirst({
+      where: (apiKeys, { eq, and, isNull }) => and(eq(apiKeys.key, apiKey), isNull(apiKeys.deletedAt)),
+      with: {
+        app: {
+          with: {
+            user: true,
+            storage: true
+          }
         }
       }
-    }
-  })
+    })
 
-  if (!apiKeyAndAppUser) {
-    throw new TRPCError({ code: 'NOT_FOUND' })
+    if (!apiKeyAndAppUser) {
+      throw new TRPCError({ code: 'NOT_FOUND' })
+    }
+
+    return next({
+      ctx: {
+        app: apiKeyAndAppUser.app,
+        user: apiKeyAndAppUser.app.user
+      }
+    })
+  } else if (signedToken) {
+    const payload = jwt.decode(signedToken)
+
+    if (!(payload as JwtPayload)?.clientId) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'clientId not found'
+      })
+    }
+
+    const apiKeyAndAppUser = await db.query.apiKeys.findFirst({
+      where: (apiKeys, { eq, and, isNull }) =>
+        and(eq(apiKeys.clientId, (payload as JwtPayload).clientId), isNull(apiKeys.deletedAt)),
+      with: {
+        app: {
+          with: {
+            user: true,
+            storage: true
+          }
+        }
+      }
+    })
+
+    if (!apiKeyAndAppUser) {
+      throw new TRPCError({ code: 'NOT_FOUND' })
+    }
+
+    try {
+      jwt.verify(signedToken, apiKeyAndAppUser.key)
+    } catch (err) {
+      throw new TRPCError({ code: 'BAD_REQUEST' })
+    }
+
+    return next({
+      ctx: {
+        app: apiKeyAndAppUser.app,
+        user: apiKeyAndAppUser.app.user
+      }
+    })
   }
 
-  return next({
-    ctx: {
-      app: apiKeyAndAppUser.app,
-      user: apiKeyAndAppUser.app.user
-    }
-  })
+  if (!apiKey && !signedToken) {
+    throw new TRPCError({ code: 'FORBIDDEN' })
+  }
 })
 
 export { router }
