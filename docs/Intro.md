@@ -91,3 +91,11 @@ pnpm add copy-to-clipboard
 # 图片处理
 pnpm add sharp
 ```
+
+## 对外发布 packages
+```shell
+pnpm add tsup -d -w
+
+# 生成 dts
+npx tsup -d ./packages/api/src  ./src/utils/open-router-dts.ts --dts-only
+```
