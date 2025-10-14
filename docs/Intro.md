@@ -99,3 +99,8 @@ pnpm add tsup -d -w
 # 生成 dts
 npx tsup -d ./packages/api/src  ./src/utils/open-router-dts.ts --dts-only
 ```
+
+
+## 7-6 在nuxt项目中集成api包
+
+* 需要注意 `packages\api\package.json`，课程中没有体现

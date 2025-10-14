@@ -1,13 +1,16 @@
 {
   "name": "@imooc-image-saas/api",
   "version": "0.0.1",
-  "main": "dist/index.ts",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc"
   },
   "files": [
-    "dist"
+    "dist",
+    "package.json"
   ],
   "devDependencies": {
     "@trpc/client": "^11.6.0"
