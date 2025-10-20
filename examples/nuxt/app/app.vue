@@ -1,6 +1,6 @@
 <template>
   <div>
-    <VueUploadButton :onFileChose="onFiles" :uploader="uploader"> 点一下上传 </VueUploadButton>
+    <VueUploadButton :onFileUploaded="onFileUploaded" :uploader="uploader"> 点一下上传 </VueUploadButton>
     <img :src="uploaded" />
   </div>
 </template>
@@ -8,11 +8,11 @@
 <script setup>
 import { ref } from 'vue'
 import { createOpenApiClient } from '@imooc-image-saas/api'
-import { UploadButton } from '@imooc-image-saas/upload-button'
+import { UploadButtonWithUploader } from '@imooc-image-saas/upload-button'
 import { connect } from '@imooc-image-saas/preact-vue-connect'
 import { createUploader } from '@imooc-image-saas/uploader'
 
-const VueUploadButton = connect(UploadButton)
+const VueUploadButton = connect(UploadButtonWithUploader)
 
 const uploader = createUploader(async (file) => {
   const tokenResp = await fetch('/api/test')
@@ -29,18 +29,7 @@ const uploader = createUploader(async (file) => {
 
 const uploaded = ref('')
 
-uploader.on('upload-success', (file, resp) => {
-  uploaded.value = resp.uploadURL
-})
-function onFiles(files) {
-  uploader.addFiles(
-    files.map((file) => ({
-      data: file
-    }))
-  )
-
-  uploader.upload()
-
-  // uploaded.value = files[0].url
+function onFileUploaded(url) {
+  uploaded.value = url
 }
 </script>
