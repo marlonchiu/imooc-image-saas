@@ -180,6 +180,9 @@ importers:
       '@imooc-image-saas/upload-button':
         specifier: workspace:*
         version: link:../../packages/upload-button
+      '@imooc-image-saas/uploader':
+        specifier: workspace:*
+        version: link:../../packages/uploader
       '@trpc/client':
         specifier: ^11.6.0
         version: 11.6.0(@trpc/server@11.6.0(typescript@5.9.3))(typescript@5.9.3)
@@ -238,6 +241,15 @@ importers:
       vite:
         specifier: ^7.1.7
         version: 7.1.9(@types/node@24.8.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)
+
+  packages/uploader:
+    devDependencies:
+      '@uppy/aws-s3':
+        specifier: ^5.0.1
+        version: 5.0.1(@uppy/core@5.0.2)
+      '@uppy/core':
+        specifier: ^5.0.2
+        version: 5.0.2
 
 packages:
 
@@ -2733,8 +2745,8 @@ packages:
   '@uppy/store-default@5.0.0':
     resolution: {integrity: sha512-hQtCSQ1yGiaval/wVYUWquYGDJ+bpQ7e4FhUUAsRQz1x1K+o7NBtjfp63O9I4Ks1WRoKunpkarZ+as09l02cPw==}
 
-  '@uppy/utils@7.0.2':
-    resolution: {integrity: sha512-2fdtgwNTkLgh7yMmHN3ZztHaP/o/iXDSt5VAbvGG4tFFkRxaaDmSKAljglEle1+m1OamKQLjm8fIxfOqu/szng==}
+  '@uppy/utils@7.1.1':
+    resolution: {integrity: sha512-4jKH3WKmQs6SCOGHCbZkLHykiaJgQo3DZsET144K8mhaoaOxfVupCYohI/UKurTQll1FhCr9dKS95Qcm0T4w7g==}
 
   '@vercel/nft@0.30.2':
     resolution: {integrity: sha512-pquXF3XZFg/T3TBor08rUhIGgOhdSilbn7WQLVP/aVSSO+25Rs4H/m3nxNDQ2x3znX7Z3yYjryN8xaLwypcwQg==}
@@ -9143,12 +9155,12 @@ snapshots:
     dependencies:
       '@uppy/companion-client': 5.0.1(@uppy/core@5.0.2)
       '@uppy/core': 5.0.2
-      '@uppy/utils': 7.0.2
+      '@uppy/utils': 7.1.1
 
   '@uppy/companion-client@5.0.1(@uppy/core@5.0.2)':
     dependencies:
       '@uppy/core': 5.0.2
-      '@uppy/utils': 7.0.2
+      '@uppy/utils': 7.1.1
       namespace-emitter: 2.0.1
       p-retry: 6.2.1
 
@@ -9156,7 +9168,7 @@ snapshots:
     dependencies:
       '@transloadit/prettier-bytes': 0.3.5
       '@uppy/store-default': 5.0.0
-      '@uppy/utils': 7.0.2
+      '@uppy/utils': 7.1.1
       lodash: 4.17.21
       mime-match: 1.0.2
       namespace-emitter: 2.0.1
@@ -9165,7 +9177,7 @@ snapshots:
 
   '@uppy/store-default@5.0.0': {}
 
-  '@uppy/utils@7.0.2':
+  '@uppy/utils@7.1.1':
     dependencies:
       lodash: 4.17.21
       preact: 10.27.2

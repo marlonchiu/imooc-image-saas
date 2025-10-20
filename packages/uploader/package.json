@@ -1,0 +1,23 @@
+{
+  "name": "@imooc-image-saas/uploader",
+  "version": "0.0.1",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "devDependencies": {
+    "@uppy/aws-s3": "^5.0.1",
+    "@uppy/core": "^5.0.2"
+  },
+  "peerDependencies": {
+    "@uppy/aws-s3": "^5.0.1",
+    "@uppy/core": "^5.0.2"
+  }
+}

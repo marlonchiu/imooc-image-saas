@@ -1,38 +1,46 @@
 <template>
-  <!-- <div ref="containerRef">Hello World</div> -->
   <div>
-    <VueUploadButton> 点一下上传 </VueUploadButton>
+    <VueUploadButton :onFileChose="onFiles" :uploader="uploader"> 点一下上传 </VueUploadButton>
+    <img :src="uploaded" />
   </div>
 </template>
 
 <script setup>
-import { ref, watchEffect, onMounted } from 'vue'
+import { ref } from 'vue'
 import { createOpenApiClient } from '@imooc-image-saas/api'
 import { UploadButton } from '@imooc-image-saas/upload-button'
 import { connect } from '@imooc-image-saas/preact-vue-connect'
+import { createUploader } from '@imooc-image-saas/uploader'
 
 const VueUploadButton = connect(UploadButton)
-// import { render, h } from 'preact'
 
-// const containerRef = ref(null)
-// watchEffect(() => {
-//   if (containerRef.value) {
-//     render(h(UploadButton, { onClick: () => console.log('click') }), containerRef.value)
-//   }
-// })
-
-onMounted(async () => {
+const uploader = createUploader(async (file) => {
   const tokenResp = await fetch('/api/test')
   const token = await tokenResp.text()
 
   const apiClient = createOpenApiClient({ signedToken: token })
 
-  const res = await apiClient.file.createPresignedUrl.mutate({
-    filename: 'Screenshot 2023-06-20 200151.png',
-    contentType: 'image/png',
-    size: 34105,
-    appId: 'c52963e1-dfa2-4e70-8333-04de2dcbbb4b'
+  return apiClient.file.createPresignedUrl.mutate({
+    filename: file.data instanceof File ? file.data.name : 'test',
+    contentType: file.data.type || '',
+    size: file.size
   })
-  console.log(res)
 })
+
+const uploaded = ref('')
+
+uploader.on('upload-success', (file, resp) => {
+  uploaded.value = resp.uploadURL
+})
+function onFiles(files) {
+  uploader.addFiles(
+    files.map((file) => ({
+      data: file
+    }))
+  )
+
+  uploader.upload()
+
+  // uploaded.value = files[0].url
+}
 </script>
