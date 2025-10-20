@@ -11,11 +11,12 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'lib/index.ts'),
       name: 'UploadButton',
-      formats: ['cjs', 'es'],
+      formats: ['cjs', 'es']
     },
     minify: false,
+    sourcemap: 'inline',
     rollupOptions: {
-      external: [...Object.keys(pkg.peerDependencies)]
+      external: [...Object.keys(pkg.peerDependencies), 'preact/hooks']
     }
   }
 })
