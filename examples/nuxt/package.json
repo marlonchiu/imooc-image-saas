@@ -14,8 +14,11 @@
     "vue": "^3.5.22",
     "vue-router": "^4.5.1",
     "@imooc-image-saas/api": "workspace:*",
+    "@imooc-image-saas/upload-button": "workspace:*",
+    "@imooc-image-saas/preact-vue-connect": "workspace:*",
     "@trpc/client": "^11.6.0",
     "@types/jsonwebtoken": "^9.0.10",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "preact": "^10.27.2"
   }
 }

@@ -1,0 +1,23 @@
+{
+  "name": "@imooc-image-saas/preact-vue-connect",
+  "version": "0.0.1",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "devDependencies": {
+    "preact": "^10.27.2",
+    "vue": "^3.5.22"
+  },
+  "peerDependencies": {
+    "preact": "^10.27.2",
+    "vue": "^3.5.22"
+  }
+}

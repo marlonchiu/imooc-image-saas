@@ -1,10 +1,25 @@
 <template>
-  <div>Hello World</div>
+  <!-- <div ref="containerRef">Hello World</div> -->
+  <div>
+    <VueUploadButton> 点一下上传 </VueUploadButton>
+  </div>
 </template>
 
 <script setup>
+import { ref, watchEffect, onMounted } from 'vue'
 import { createOpenApiClient } from '@imooc-image-saas/api'
-import { onMounted } from 'vue'
+import { UploadButton } from '@imooc-image-saas/upload-button'
+import { connect } from '@imooc-image-saas/preact-vue-connect'
+
+const VueUploadButton = connect(UploadButton)
+// import { render, h } from 'preact'
+
+// const containerRef = ref(null)
+// watchEffect(() => {
+//   if (containerRef.value) {
+//     render(h(UploadButton, { onClick: () => console.log('click') }), containerRef.value)
+//   }
+// })
 
 onMounted(async () => {
   const tokenResp = await fetch('/api/test')
