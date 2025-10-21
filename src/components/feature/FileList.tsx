@@ -159,7 +159,12 @@ export function FileList({
     <ScrollArea className="h-full">
       {isPending && <div className="text-center">Loading</div>}
 
-      <div className={cn('relative flex flex-wrap justify-center gap-4 container')}>
+      {/* 本来自己就支持媒体查询 grid-cols-1 @md:grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4 @4xl:grid-cols-5 */}
+      <div
+        className={cn(
+          'relative container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5  2xl:grid-cols-6 gap-4'
+        )}
+      >
         {/* 正在上传 */}
         {uploadingFileIDs.length > 0 &&
           uploadingFileIDs.map((id) => {
@@ -174,7 +179,7 @@ export function FileList({
 
         {filesList?.map((file) => {
           return (
-            <div key={file.id} className="relative w-56 h-56 flex justify-center items-center border">
+            <div key={file.id} className="relative w-56 h-56 flex justify-center items-center border overflow-hidden">
               <div className="inset-0 absolute bg-background/30 opacity-0 hover:opacity-100 transition-all justify-center items-center flex">
                 <CopyFileUrl url={file.url}></CopyFileUrl>
                 <DeleteFile fileId={file.id} onDeleteSuccess={handleDeleteFile}></DeleteFile>
