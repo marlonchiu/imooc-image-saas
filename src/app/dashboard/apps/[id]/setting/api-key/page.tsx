@@ -2,10 +2,33 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { trpcClientReact } from '@/utils/api'
-import { Plus } from 'lucide-react'
+import { Plus, Copy, Eye } from 'lucide-react'
 import { useState } from 'react'
+import copy from 'copy-to-clipboard'
+import { toast } from 'sonner'
+
+function KeyString({ id }: { id: number }) {
+  const { data: key } = trpcClientReact.apiKeys.requestKey.useQuery(id)
+
+  return (
+    <div className="flex justify-end items-center gap-2">
+      <span>{key}</span>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => {
+          copy(key!)
+          toast('secret key copied!')
+        }}
+      >
+        <Copy></Copy>
+      </Button>
+    </div>
+  )
+}
 
 export default function ApiKeysPage({ params: { id } }: { params: { id: string } }) {
   const { data: apiKeys } = trpcClientReact.apiKeys.listApiKeys.useQuery({
@@ -29,6 +52,7 @@ export default function ApiKeysPage({ params: { id } }: { params: { id: string }
   const utils = trpcClientReact.useUtils()
 
   const [newApiKeyName, setNewApiKeyName] = useState('')
+  const [showKeyMap, setShowKeyMap] = useState<Record<number, boolean>>({})
 
   return (
     <div className="pt-10">
@@ -55,14 +79,62 @@ export default function ApiKeysPage({ params: { id } }: { params: { id: string }
           </PopoverContent>
         </Popover>
       </div>
-      {apiKeys?.map((apiKey) => {
+
+      <Accordion type="single" collapsible>
+        {apiKeys?.map((apiKey) => {
+          return (
+            <AccordionItem key={apiKey.id} value={apiKey.id.toString()}>
+              <AccordionTrigger>{apiKey.name}</AccordionTrigger>
+              <AccordionContent>
+                <div className="text-lg mb-4">
+                  <div className="flex justify-between items-center">
+                    <span>Client Id</span>
+                    <div className="flex justify-end items-center gap-2">
+                      <span>{apiKey.clientId}</span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          copy(apiKey.clientId)
+                          toast('client id copied!')
+                        }}
+                      >
+                        <Copy></Copy>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-between text-lg mb-4">
+                  <span>Secret Key</span>
+                  {!showKeyMap[apiKey.id] && (
+                    <Button
+                      onClick={() => {
+                        setShowKeyMap((oldMap) => ({
+                          ...oldMap,
+                          [apiKey.id]: true
+                        }))
+                      }}
+                    >
+                      <Eye></Eye>
+                    </Button>
+                  )}
+
+                  {showKeyMap[apiKey.id] && <KeyString id={apiKey.id}></KeyString>}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          )
+        })}
+      </Accordion>
+
+      {/* {apiKeys?.map((apiKey) => {
         return (
           <div key={apiKey.id} className="border p-4 flex justify-between items-center">
             <span>{apiKey.name}</span>
             <span>{apiKey.key}</span>
           </div>
         )
-      })}
+      })} */}
     </div>
   )
 }
