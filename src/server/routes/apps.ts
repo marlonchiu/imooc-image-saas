@@ -3,7 +3,7 @@ import { createAppsSchema } from '../db/validate-schema'
 import db from '@/server/db/db'
 import { apps, storageConfiguration } from '../db/schema'
 import { v4 as uuidV4 } from 'uuid'
-import { desc, eq, and } from 'drizzle-orm'
+import { desc, eq, and, count, isNull } from 'drizzle-orm'
 import z from 'zod'
 import { TRPCError } from '@trpc/server'
 
@@ -12,6 +12,20 @@ export const appsRoutes = router({
     .input(createAppsSchema.pick({ name: true, description: true }))
     .mutation(async ({ input, ctx }) => {
       const { session } = ctx
+
+      const isFreePlan = ctx.plan === 'free'
+      // 免费用户只能创建一个应用
+      if (isFreePlan) {
+        const appCountResult = await db
+          .select({ count: count() })
+          .from(apps)
+          .where(and(eq(apps.userId, session.user.id), isNull(apps.deletedAt)))
+
+        const countNum = appCountResult[0].count
+        if (countNum >= 1) {
+          throw new TRPCError({ code: 'FORBIDDEN' })
+        }
+      }
 
       const result = await db
         .insert(apps)

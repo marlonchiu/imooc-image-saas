@@ -29,6 +29,13 @@ export default function AppPage({ params: { id: appId } }: { params: { id: strin
     refetchOnMount: false
   })
 
+  const { data: plan } = trpcClientReact.user.getPlan.useQuery(void 0, {
+    retry: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false
+  })
+
   const currentApp = apps?.filter((app) => app.id === appId)[0]
 
   const [showUpgrade, setShowUpgrade] = useState(false)
@@ -125,7 +132,15 @@ export default function AppPage({ params: { id: appId } }: { params: { id: strin
           </div>
           <div className="flex justify-center gap-2">
             <UploadButton uppy={uppy}></UploadButton>
-            <Button asChild>
+            <Button
+              asChild
+              onClick={(e) => {
+                if (plan === 'free' && apps.length >= 1) {
+                  e.preventDefault()
+                  setShowUpgrade(true)
+                }
+              }}
+            >
               <Link href="./new">New App</Link>
             </Button>
             <Button asChild>
