@@ -3,10 +3,10 @@ import { withAppProcedure, router } from '../trpc'
 import { S3Client, PutObjectCommand, PutObjectCommandInput, S3ClientConfig } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { TRPCError } from '@trpc/server'
-import { files } from '../db/schema'
+import { files, apps } from '../db/schema'
 import db from '@/server/db/db'
 import { v4 as uuidV4 } from 'uuid'
-import { sql, desc, asc, eq, and, isNull } from 'drizzle-orm'
+import { sql, desc, asc, eq, and, isNull, count } from 'drizzle-orm'
 
 // const { COS_APP_ID, COS_APP_SECRET, COS_APP_BUCKET, COS_APP_API_ENDPOINT, COS_APP_REGION } = process.env
 
@@ -27,7 +27,7 @@ export const fileOpenRoutes = router({
       z.object({
         filename: z.string(),
         contentType: z.string(),
-        size: z.number(),
+        size: z.number()
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -35,7 +35,6 @@ export const fileOpenRoutes = router({
       const date = new Date()
 
       const isoString = date.toISOString()
-
       const dateString = isoString.split('T')[0]
 
       if (!app || !app.storage) {
@@ -44,6 +43,22 @@ export const fileOpenRoutes = router({
 
       if (app.userId !== user.id) {
         throw new TRPCError({ code: 'FORBIDDEN' })
+      }
+
+      const isFreePlan = user.plan === 'free'
+
+      // 免费会员 一个应用只能上传一个文件
+      if (isFreePlan) {
+        const alreadyUploadedFilesCountResult = await db
+          .select({ count: count() })
+          .from(files)
+          .where(and(eq(files.appId, app.id), isNull(files.deletedAt)))
+
+        const countNum = alreadyUploadedFilesCountResult[0].count
+
+        if (countNum >= 1) {
+          throw new TRPCError({ code: 'FORBIDDEN' })
+        }
       }
 
       const storage = app.storage
@@ -75,6 +90,7 @@ export const fileOpenRoutes = router({
         method: 'PUT' as const
       }
     }),
+
   saveFile: withAppProcedure
     .input(
       z.object({

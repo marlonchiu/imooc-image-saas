@@ -18,6 +18,8 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { UrlMaker } from './UrlMaker'
+import { TRPCClientError } from '@trpc/client'
+import { toast } from 'sonner'
 
 export default function AppPage({ params: { id: appId } }: { params: { id: string } }) {
   const { data: apps, isPending } = trpcClientReact.apps.listApps.useQuery(void 0, {
@@ -32,13 +34,24 @@ export default function AppPage({ params: { id: appId } }: { params: { id: strin
     const uppy = new Uppy()
     uppy.use(AwsS3, {
       shouldUseMultipart: false,
-      getUploadParameters(file) {
-        return trpcPureClient.file.createPresignedUrl.mutate({
-          filename: file.data instanceof File ? file.data.name : 'test',
-          contentType: file.data.type || '',
-          size: file.data.size || file.size || 0,
-          appId: appId
-        })
+      async getUploadParameters(file) {
+        try {
+          const result = await trpcPureClient.file.createPresignedUrl.mutate({
+            filename: file.data instanceof File ? file.data.name : 'test',
+            contentType: file.data.type || '',
+            size: file.data.size || file.size || 0,
+            appId: appId
+          })
+          return result
+        } catch (error) {
+          if (error instanceof TRPCClientError) {
+            console.log('错误码:', error.data?.code)
+            console.log('错误信息:', error.message)
+            console.log('HTTP状态:', error.data?.httpStatus)
+          }
+          toast.error('Forbidden Upload File !')
+          throw new Error('Could upload')
+        }
       }
     })
 

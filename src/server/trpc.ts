@@ -30,9 +30,17 @@ export const protectedProcedure = withLoggerProcedure.use(withSessionMiddleware)
     throw new TRPCError({ code: 'FORBIDDEN' })
   }
 
+  const user = await db.query.users.findFirst({
+    where: (users, { eq }) => eq(users.id, ctx.session!.user.id),
+    columns: { plan: true }
+  })
+
+  const plan = user!.plan
+
   return next({
     ctx: {
-      session: ctx.session!
+      session: ctx.session!,
+      plan
     }
   })
 })
