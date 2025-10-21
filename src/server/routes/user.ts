@@ -1,5 +1,6 @@
 import { protectedProcedure, router } from '../trpc'
 import db from '@/server/db/db'
+import { users } from '../db/schema'
 
 export const userRoutes = router({
   getPlan: protectedProcedure.query(async ({ ctx }) => {
@@ -10,5 +11,10 @@ export const userRoutes = router({
     })
 
     return result?.plan
+  }),
+  upgrade: protectedProcedure.mutation(async ({ ctx }) => {
+    await db.update(users).set({
+      plan: 'payed'
+    })
   })
 })

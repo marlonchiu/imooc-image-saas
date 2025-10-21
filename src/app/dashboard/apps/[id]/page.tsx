@@ -20,6 +20,7 @@ import Link from 'next/link'
 import { UrlMaker } from './UrlMaker'
 import { TRPCClientError } from '@trpc/client'
 import { toast } from 'sonner'
+import { UpgradeDialog } from './UpgradeDialog'
 
 export default function AppPage({ params: { id: appId } }: { params: { id: string } }) {
   const { data: apps, isPending } = trpcClientReact.apps.listApps.useQuery(void 0, {
@@ -29,6 +30,8 @@ export default function AppPage({ params: { id: appId } }: { params: { id: strin
   })
 
   const currentApp = apps?.filter((app) => app.id === appId)[0]
+
+  const [showUpgrade, setShowUpgrade] = useState(false)
 
   const [uppy] = useState(() => {
     const uppy = new Uppy()
@@ -44,13 +47,14 @@ export default function AppPage({ params: { id: appId } }: { params: { id: strin
           })
           return result
         } catch (error) {
-          if (error instanceof TRPCClientError) {
-            console.log('错误码:', error.data?.code)
-            console.log('错误信息:', error.message)
-            console.log('HTTP状态:', error.data?.httpStatus)
-          }
-          toast.error('Forbidden Upload File !')
-          throw new Error('Could upload')
+          setShowUpgrade(true)
+          // if (error instanceof TRPCClientError) {
+          //   console.log('错误码:', error.data?.code)
+          //   console.log('错误信息:', error.message)
+          //   console.log('HTTP状态:', error.data?.httpStatus)
+          // }
+          // toast.error('Forbidden Upload File !')
+          throw new Error('Forbidden upload')
         }
       }
     })
@@ -173,6 +177,8 @@ export default function AppPage({ params: { id: appId } }: { params: { id: strin
             {makingUrlImageId && <UrlMaker id={makingUrlImageId} />}
           </DialogContent>
         </Dialog>
+
+        <UpgradeDialog open={showUpgrade} onOpenChange={(flag) => setShowUpgrade(flag)}></UpgradeDialog>
       </div>
     )
   }
