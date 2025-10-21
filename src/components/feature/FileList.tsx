@@ -7,7 +7,7 @@ import { LocalFileItem, RemoteFileItem } from './FileItem'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { type FilesOrderByColumn } from '@/server/routes/file'
-import { DeleteFile, CopyFileUrl } from './FileItemAction'
+import { DeleteFile, CopyFileUrl, MakerFile } from './FileItemAction'
 
 import { inferRouterOutputs } from '@trpc/server'
 type FileResult = inferRouterOutputs<AppRouter>['file']['listFiles']
@@ -17,12 +17,14 @@ export function FileList({
   uppy,
   orderBy,
   appId,
-  showDeleted
+  showDeleted,
+  onMakeUrl
 }: {
   uppy: Uppy
   orderBy: FilesOrderByColumn
   appId: string
   showDeleted: boolean
+  onMakeUrl: (id: string) => void
 }) {
   const queryKey = { limit, orderBy, appId, showDeleted }
 
@@ -181,7 +183,8 @@ export function FileList({
           return (
             <div key={file.id} className="relative w-56 h-56 flex justify-center items-center border overflow-hidden">
               <div className="inset-0 absolute bg-background/30 opacity-0 hover:opacity-100 transition-all justify-center items-center flex">
-                <CopyFileUrl url={file.url}></CopyFileUrl>
+                {/* <CopyFileUrl url={file.url}></CopyFileUrl> */}
+                <MakerFile onClick={() => onMakeUrl(file.id)}></MakerFile>
                 <DeleteFile fileId={file.id} onDeleteSuccess={handleDeleteFile}></DeleteFile>
               </div>
               <RemoteFileItem contentType={file.contentType} name={file.name} id={file.id} />

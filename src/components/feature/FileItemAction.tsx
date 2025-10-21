@@ -33,3 +33,11 @@ export function CopyFileUrl({ url }: { url: string }) {
     </Button>
   )
 }
+
+export function MakerFile({ onClick }: { onClick: (e: React.MouseEvent<HTMLButtonElement>) => void }) {
+  return (
+    <Button variant="ghost" onClick={onClick}>
+      <Copy />
+    </Button>
+  )
+}

@@ -6,6 +6,7 @@ import { useState } from 'react'
 
 import { trpcPureClient, trpcClientReact } from '@/utils/api'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { UploadButton } from '@/components/feature/UploadButton'
 import { Dropzone } from '@/components/feature/Dropzone'
 import { UploadPreview } from '@/components/feature/UploadPreview'
@@ -16,6 +17,7 @@ import { MoveUp, MoveDown, Settings } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
+import { UrlMaker } from './UrlMaker'
 
 export default function AppPage({ params: { id: appId } }: { params: { id: string } }) {
   const { data: apps, isPending } = trpcClientReact.apps.listApps.useQuery(void 0, {
@@ -61,6 +63,8 @@ export default function AppPage({ params: { id: appId } }: { params: { id: strin
   })
 
   const [showDeleted, setShowDeleted] = useState(false)
+
+  const [makingUrlImageId, setMakingUrlImageId] = useState<string | null>(null)
   const onCheckedChange = (value: boolean) => {
     setShowDeleted(value)
   }
@@ -125,13 +129,37 @@ export default function AppPage({ params: { id: appId } }: { params: { id: strin
                   </div>
                 )}
 
-                <FileList uppy={uppy} orderBy={orderBy} appId={appId} showDeleted={showDeleted} />
+                <FileList
+                  uppy={uppy}
+                  orderBy={orderBy}
+                  appId={appId}
+                  showDeleted={showDeleted}
+                  onMakeUrl={(id) => setMakingUrlImageId(id)}
+                />
               </>
             )
           }}
         </Dropzone>
 
         <UploadPreview uppy={uppy} />
+
+        <Dialog
+          open={Boolean(makingUrlImageId)}
+          onOpenChange={(flag: boolean) => {
+            if (flag === false) {
+              setMakingUrlImageId(null)
+            }
+          }}
+        >
+          <DialogContent className="max-w-4xl" onPointerDownOutside={(e) => e.preventDefault()}>
+            <DialogHeader>
+              <DialogTitle>Make Url</DialogTitle>
+              <DialogDescription></DialogDescription>
+            </DialogHeader>
+
+            {makingUrlImageId && <UrlMaker id={makingUrlImageId} />}
+          </DialogContent>
+        </Dialog>
       </div>
     )
   }

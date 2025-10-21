@@ -60,10 +60,25 @@ export async function GET(request: NextRequest, { params: { id } }: { params: { 
 
   const image = sharp(byteArray)
 
+  // 处理图片切割旋转
+  const query = new URL(request.nextUrl).searchParams
+
+  let width = 250
+  let rotate = 0
+
+  if (query && query.get('width')) {
+    width = parseInt(query.get('width') || '')
+  }
+
+  if (query && query.get('rotate')) {
+    rotate = parseInt(query.get('rotate') || '')
+  }
+
   image.resize({
-    width: 250,
-    height: 250
+    width: width
   })
+
+  image.rotate(rotate)
 
   const buffer = await image.webp().toBuffer()
 
