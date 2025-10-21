@@ -1,14 +1,15 @@
 import { getServerSession } from '@/server/auth'
 import { redirect } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ThemeProvider } from './ThemeProvider'
-import { ThemeToggle } from './ThemeToggle'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { ThemeProvider } from './ThemeProvider'
+import { ThemeToggle } from './ThemeToggle'
+import { Plan } from './Plan'
 
 export default async function DashboardLayout({
   children,
@@ -31,10 +32,13 @@ export default async function DashboardLayout({
             <ThemeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <Avatar>
-                  <AvatarImage src={session.user.image!} />
-                  <AvatarFallback>{session.user.name?.substring(0, 2)}</AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar>
+                    <AvatarImage src={session.user.image!} />
+                    <AvatarFallback>{session.user.name?.substring(0, 2)}</AvatarFallback>
+                  </Avatar>
+                  <Plan />
+                </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
