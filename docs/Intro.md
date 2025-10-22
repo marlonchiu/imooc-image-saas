@@ -111,7 +111,6 @@ npx tsup -d ./packages/api/src  ./src/utils/open-router-dts.ts --dts-only
 * [https://sentry.io/welcome/](https://sentry.io/welcome/)
 * [https://docs.uploadthing.com/](https://docs.uploadthing.com/)
 
-
 ## Stripe 对接
 
 * [https://docs.stripe.com/checkout/quickstart](https://docs.stripe.com/checkout/quickstart)
@@ -124,4 +123,23 @@ stripe login
 stripe listen --forward-to localhost:3000/api/checkout/webhook
 
 # Your webhook signing secret is whsec_744bb2f25dfbb63e5330c4de454afcbc44ae6fd3ddf4f4ec13ff679c49d682e0 (^C to quit)
+```
+
+## 部署服务供应商
+
+* [https://cloud.google.com/run](https://cloud.google.com/run)
+* [https://fly.io/](https://fly.io/)
+* [AWS Lambda](https://aws.amazon.com/cn/pm/lambda/)
+* [Vercel](https://vercel.com/)
+* [Cloudflare](https://www.cloudflare.com/)
+
+
+## 数据库服务商
+
+* [neon](https://neon.com/)
+* [supabase](https://supabase.com/)
+* [zeabur](https://zeabur.com/)
+
+```shell
+npx drizzle-kit push --config .\drizzle.config.neon.ts
 ```
