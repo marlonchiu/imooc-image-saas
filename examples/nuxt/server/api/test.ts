@@ -1,18 +1,18 @@
 // import { createOpenApiClient } from '@imooc-image-saas/api'
 import jwt from 'jsonwebtoken'
 
-const apiKey = '7ab720dd-4774-4fc4-99fe-74795468b3d6'
-const clientId = "bce5d3d2-9e02-4229-b539-1279f8ab58d3";
+const apiKey = 'a116c5e9-9bdd-4c8e-a757-7b3511a5938a'
+const clientId = '79628fb3-7eca-4ad1-a608-cba663f66c17'
+const appId = '9941d4a3-a643-41d8-9c73-c07296255458'
 
 export default defineEventHandler(async (event) => {
-
   // 用 apiKey 加密 payload
   const token = jwt.sign(
     {
       filename: '1.png',
       contentType: 'image/png',
       size: 43693,
-      appId: 'e760dcd4-aac4-4709-a7e9-0f07bc98654d',
+      appId,
       clientId
     },
     apiKey,
