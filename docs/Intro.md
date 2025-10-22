@@ -110,3 +110,18 @@ npx tsup -d ./packages/api/src  ./src/utils/open-router-dts.ts --dts-only
 
 * [https://sentry.io/welcome/](https://sentry.io/welcome/)
 * [https://docs.uploadthing.com/](https://docs.uploadthing.com/)
+
+
+## Stripe 对接
+
+* [https://docs.stripe.com/checkout/quickstart](https://docs.stripe.com/checkout/quickstart)
+* [https://docs.stripe.com/checkout/fulfillment](https://docs.stripe.com/checkout/fulfillment)
+* [https://docs.stripe.com/stripe-cli/install](https://docs.stripe.com/stripe-cli/install)
+
+```shell
+# 1. stripe-cli 使用
+stripe login
+stripe listen --forward-to localhost:3000/api/checkout/webhook
+
+# Your webhook signing secret is whsec_744bb2f25dfbb63e5330c4de454afcbc44ae6fd3ddf4f4ec13ff679c49d682e0 (^C to quit)
+```

@@ -23,7 +23,7 @@ export const users = pgTable('user', {
   name: text('name'),
   email: text('email').unique(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),
-  plan: text("plan", { enum: ["free", "payed"] }),
+  plan: text('plan', { enum: ['free', 'payed'] }),
   image: text('image'),
   createAt: date('create_at').defaultNow()
 })
@@ -193,5 +193,21 @@ export const apiKeysRelation = relations(apiKeys, ({ one }) => ({
   app: one(apps, {
     fields: [apiKeys.appId],
     references: [apps.id]
+  })
+}))
+
+export const orders = pgTable('orders', {
+  sessionId: varchar('sessionId', { length: 255 }).primaryKey(),
+  status: varchar('status', {
+    enum: ['created', 'canceled', 'completed']
+  }).notNull(),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow(),
+  userId: text('id').notNull()
+})
+
+export const ordersRelation = relations(orders, ({ one }) => ({
+  user: one(users, {
+    fields: [orders.userId],
+    references: [users.id]
   })
 }))

@@ -4,7 +4,8 @@ import { trpcClientReact } from '@/utils/api'
 export default function PricePlan() {
   const { mutate, isPending } = trpcClientReact.user.upgrade.useMutation({
     onSuccess: (resp) => {
-      
+      // redirect to stripe checkout
+      window.location.href = resp.url
     }
   })
 
